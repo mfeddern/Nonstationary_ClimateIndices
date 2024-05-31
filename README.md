@@ -1,0 +1,1 @@
+Code and data for: Feddern, M. L., E. J. Ward, M. A. Litzow, M. Jacox, I. D. Schroeder, W. H. Satterthwaite, C. J. Cunningham, N. A. Bond, M. J. Malick, B. J. Burke. 2024. Quantifying time-dependent climate and ecosystem relationships in the California Current Ecosystem.
