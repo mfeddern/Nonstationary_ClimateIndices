@@ -1036,6 +1036,9 @@ data<- climate_dat%>%filter(season=="Spring"&region!='GoA'&Year_lag<2023)%>%
   #  filter(Year_lag!=2022&Year_lag!=2015)%>%
   distinct()%>%
   left_join(eras)
+index.names <-c("PDO", "NPGO", "NPH", "ONI")
+region.names<-unique(climate_dat$region)
+period.names <- unique(climate_dat$period)
 
 data.phe.lm<-data%>%filter(season=="Spring")%>%
   dplyr::select(Year_lag, season, period,region,stand_tumi,stand_lusi,stand_sti,stand_bakun_seasonally,
@@ -1084,6 +1087,10 @@ ggplot(STI, aes(x = beta, fill = as.factor(period))) +
   geom_vline(xintercept = 0, lty = 2) +
   labs(x = "Slope",
        y = "Posterior density")
+
+index.names <-unique(STI$Index)
+region.names<-unique(STI$region)
+period.names <- unique(STI$period)
 
 postplot(STI, STI$beta)
 postplot(STI,STI$alpha)
