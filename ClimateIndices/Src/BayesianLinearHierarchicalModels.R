@@ -22,10 +22,10 @@ set.seed(1234)
 
 ##### Writing Bayes DFA model function ####
 warmups <- 1000
-total_iterations <- 10000
+total_iterations <- 4000
 max_treedepth <-  10
 n_chains <-  3
-n_cores <- 4
+n_cores <- 3
 adapt_delta <- 0.95
 col<-pnw_palette("Sunset2",3,type="discrete")
 
@@ -63,7 +63,7 @@ bayeslinmod <- function(dat, ind,xyz, period) {
   betaP<-posterior[seq(NP+1,NP*2),]%>%
     add_column(
       period=rep(seq(1,NP),1))
-  n<- 10000
+  n<- total_iterations
   for(i in 1:NP){
     tempalpha <- rnorm(n, alphaP$mean[i],alphaP$sd[i])
     tempbeta <- rnorm(n, betaP$mean[i],betaP$sd[i])
@@ -99,7 +99,7 @@ dat <- dfa%>%dplyr::select(estimate, Year_lag, lower, upper,trend,season)%>%
 climpdo <- climate_dat_cop%>%filter(season=="Spring")%>%
   dplyr::select(Year_lag, region, seasonal_PDO,  seasonal_NPGO,  seasonal_ONI,  seasonal_NPH)%>%
   distinct()%>%
-  filter(Year_lag<2023)
+  filter(Year_lag<2024)
 data <- climate_dat_cop%>%filter(season=="Summer")%>%
   dplyr::select(Year_lag, region, seasonal_copepod_northern, 
          seasonal_copepod_southern)%>%
@@ -143,7 +143,7 @@ survey.lm<-ggplot(data = dat.lm%>%filter(period!=4), aes(y = estimate, x =Index_
   geom_smooth(method = "lm", se = FALSE, aes(col=as.factor(period))) +
  # geom_smooth(method = "lm", se = FALSE, col='grey') +
   scale_y_continuous(name = "Index of Abundance") +
-  scale_color_manual(values =  col[1:3], name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022'))+
+  scale_color_manual(values =  col[1:3], name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2023'))+
   theme_bw()+
   xlab("Climate Index Value")+
   theme(plot.title = element_text(hjust = 0.5))+
@@ -1029,10 +1029,13 @@ overlap.upW
 
 
 ##### Phenology Model Runs #####
-climate_dat <-readRDS(here('data/physical/climate_dat_upwelling.rds'))
+climate_dat <-readRDS(here('data/physical/climate_dat_upwelling.rds'))%>%
+  mutate(region=fct_relevel(region,c("Northern CC","Central CC","Southern CC")))
+
+ 
 season <- "Spring"
 eras <- data.frame(era.region2=seq(1,9), era.region=seq(4,12))
-data<- climate_dat%>%filter(season=="Spring"&region!='GoA'&Year_lag<2023)%>%
+data<- climate_dat%>%filter(season=="Spring"&region!='GoA'&Year_lag<2023&period!=4)%>%
   #  filter(Year_lag!=2022&Year_lag!=2015)%>%
   distinct()%>%
   left_join(eras)
@@ -1050,19 +1053,30 @@ data.phe.lm<-data%>%filter(season=="Spring")%>%
   pivot_longer(!c(Year_lag, season,period,region, Index_Value, Index_Name), 
                names_to = "Up_Name", values_to = "Up_Value")%>%
   distinct()
-ggplot(data = data.phe.lm%>%filter(region=="Northern CC"), aes(y = Up_Value, x =Index_Value,col=as.factor(period))) +
-  facet_grid(Index_Name~Up_Name, scales='free') +
-  geom_point(aes(col=as.factor(period))) +
+
+###### STI #######
+
+sti_dat <-ggplot(data = data.phe.lm%>%filter(Up_Name=="stand_sti"&period!=4), aes(y = Up_Value, x =Index_Value,col=as.factor(period))) +
+  facet_grid(Index_Name~region, scales='free') +
+  geom_point(aes(col=as.factor(period)), alpha = 0.5) +
   # geom_text(aes(label=Year_lag,col=as.factor(period))) +
   geom_smooth(method = "lm", se = FALSE, aes(col=as.factor(period))) +
-  geom_smooth(method = "lm", se = FALSE, col='grey') +
-  scale_y_continuous(name = "Index of Abundance") +
+  #geom_smooth(method = "lm", se = FALSE, col='grey') +
+  scale_y_continuous(name = "STI") +
   scale_color_manual(values =  col[1:3], name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022'))+
   theme_bw()+
   xlab("Climate Index Value")+
   theme(plot.title = element_text(hjust = 0.5))+
   ggtitle("Spring")
-###### STI #######
+sti_dat
+pdf(file = "Output/Supplemental/FigureS10_STIlinearregression.pdf",   # The directory you want to save the file in
+    width = 7, # The width of the plot in inches
+    height = 5)
+sti_dat
+dev.off()
+
+
+
 STI<-NULL
 columns<-c(which(colnames(data) == "seasonal_PDO"), which(colnames(data) == "seasonal_NPGO"),
            which(colnames(data) == "seasonal_NPH"),which(colnames(data) == "seasonal_ONI"))
@@ -1078,15 +1092,35 @@ STI<-STI%>%mutate(survey="STI",era.region2=period,
   mutate(Season='Spring', lag=0, era.region=era.region2,period=as.numeric(as.factor(period)))
 
 
-ggplot(STI, aes(x = beta, fill = as.factor(period))) +
+STI_beta <-ggplot(STI, aes(x = beta, fill = as.factor(period))) +
   theme_bw() +
-  facet_wrap(region~Index, ncol = 3, scales='free') +
+  facet_grid(Index~region) +
   geom_density(alpha = 0.7) +
-  scale_fill_manual(values = c(col[1],col[2], col[3])) +
+  scale_fill_manual(values = c(col[1],col[2], col[3]), name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022')) +
   #theme(legend.title = element_blank(), legend.position = 'top', legend.key.size = unit(3, 'mm')) +
   geom_vline(xintercept = 0, lty = 2) +
   labs(x = "Slope",
        y = "Posterior density")
+pdf(file = "Output/Supplemental/FigureS11_STIbeta.pdf",   # The directory you want to save the file in
+    width = 7, # The width of the plot in inches
+    height = 5)
+STI_beta
+dev.off()
+
+STI_alpha <-ggplot(STI, aes(x = alpha, fill = as.factor(period))) +
+  theme_bw() +
+  facet_grid(Index~region) +
+  geom_density(alpha = 0.7) +
+  scale_fill_manual(values = c(col[1],col[2], col[3]), name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022')) +
+  #theme(legend.title = element_blank(), legend.position = 'top', legend.key.size = unit(3, 'mm')) +
+  geom_vline(xintercept = 0, lty = 2) +
+  labs(x = "Intercept",
+       y = "Posterior density")
+pdf(file = "Output/Supplemental/FigureS12_STIalpha.pdf",   # The directory you want to save the file in
+    width = 7, # The width of the plot in inches
+    height = 5)
+STI_alpha
+dev.off()
 
 index.names <-unique(STI$Index)
 region.names<-unique(STI$region)
@@ -1113,6 +1147,25 @@ overlap.sti<-overlap.sti%>%mutate(survey="STI")
 
 
 ###### LUSI #######
+lusi_dat <-ggplot(data = data.phe.lm%>%filter(Up_Name=="stand_lusi"&period!=4), aes(y = Up_Value, x =Index_Value,col=as.factor(period))) +
+  facet_grid(Index_Name~region, scales='free') +
+  geom_point(aes(col=as.factor(period)), alpha = 0.5) +
+  # geom_text(aes(label=Year_lag,col=as.factor(period))) +
+  geom_smooth(method = "lm", se = FALSE, aes(col=as.factor(period))) +
+  #geom_smooth(method = "lm", se = FALSE, col='grey') +
+  scale_y_continuous(name = "LUSI") +
+  scale_color_manual(values =  col[1:3], name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022'))+
+  theme_bw()+
+  xlab("Climate Index Value")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  ggtitle("Spring")
+lusi_dat
+pdf(file = "Output/Supplemental/FigureS13_LUSIlinearregression.pdf",   # The directory you want to save the file in
+    width = 7, # The width of the plot in inches
+    height = 5)
+lusi_dat
+dev.off()
+
 LUSI<-NULL
 for(i in 1:length(columns)){
   bayeslinmod(data, columns[i],  data$stand_lusi, data$era.region2)
@@ -1126,15 +1179,36 @@ LUSI<-LUSI%>%mutate(survey="LUSI",era.region2=period,
   mutate(Season='Spring', lag=0, era.region=era.region2,period=as.numeric(as.factor(period)))
 
 
-ggplot(LUSI, aes(x = beta, fill = as.factor(period), group=as.factor(era.region))) +
+
+LUSI_beta <-ggplot(LUSI, aes(x = beta, fill = as.factor(period))) +
   theme_bw() +
-  facet_wrap(region~Index, ncol = 4, scales='free') +
+  facet_grid(Index~region) +
   geom_density(alpha = 0.7) +
-  scale_fill_manual(values = c(col[1],col[2], col[3])) +
+  scale_fill_manual(values = c(col[1],col[2], col[3]), name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022')) +
   #theme(legend.title = element_blank(), legend.position = 'top', legend.key.size = unit(3, 'mm')) +
   geom_vline(xintercept = 0, lty = 2) +
   labs(x = "Slope",
        y = "Posterior density")
+pdf(file = "Output/Supplemental/FigureS14_LUSIbeta.pdf",   # The directory you want to save the file in
+    width = 7, # The width of the plot in inches
+    height = 5)
+LUSI_beta
+dev.off()
+
+LUSI_alpha <-ggplot(LUSI, aes(x = alpha, fill = as.factor(period))) +
+  theme_bw() +
+  facet_grid(Index~region) +
+  geom_density(alpha = 0.7) +
+  scale_fill_manual(values = c(col[1],col[2], col[3]), name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022')) +
+  #theme(legend.title = element_blank(), legend.position = 'top', legend.key.size = unit(3, 'mm')) +
+  geom_vline(xintercept = 0, lty = 2) +
+  labs(x = "Intercept",
+       y = "Posterior density")
+pdf(file = "Output/Supplemental/FigureS15_LUSIalpha.pdf",   # The directory you want to save the file in
+    width = 7, # The width of the plot in inches
+    height = 5)
+LUSI_alpha
+dev.off()
 
 overlap.lusi <- NA
 for(j in 2:4){
@@ -1154,6 +1228,25 @@ overlap.lusi
 overlap.lusi<-overlap.lusi%>%mutate(survey="LUSI")
 
 ###### TUMI #######
+tumi_dat <-ggplot(data = data.phe.lm%>%filter(Up_Name=="stand_tumi"&period!=4), aes(y = Up_Value, x =Index_Value,col=as.factor(period))) +
+  facet_grid(Index_Name~region, scales='free') +
+  geom_point(aes(col=as.factor(period)), alpha = 0.5) +
+  # geom_text(aes(label=Year_lag,col=as.factor(period))) +
+  geom_smooth(method = "lm", se = FALSE, aes(col=as.factor(period))) +
+  #geom_smooth(method = "lm", se = FALSE, col='grey') +
+  scale_y_continuous(name = "TUMI") +
+  scale_color_manual(values =  col[1:3], name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022'))+
+  theme_bw()+
+  xlab("Climate Index Value")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  ggtitle("Spring")
+tumi_dat
+pdf(file = "Output/Supplemental/FigureS7_TUMIlinearregression.pdf",   # The directory you want to save the file in
+    width = 7, # The width of the plot in inches
+    height = 5)
+tumi_dat
+dev.off()
+
 TUMI<-NULL
 for(i in 1:length(columns)){
   bayeslinmod(data, columns[i],  data$stand_tumi, data$era.region2)
@@ -1167,15 +1260,35 @@ TUMI<-TUMI%>%mutate(survey="TUMI",era.region2=period,
   mutate(Season='Spring', lag=0, era.region=era.region2,period=as.numeric(as.factor(period)))
 
 
-ggplot(TUMI, aes(x = beta, fill = as.factor(period), group=as.factor(era.region))) +
+TUMI_beta <-ggplot(TUMI, aes(x = beta, fill = as.factor(period))) +
   theme_bw() +
-  facet_wrap(region~Index, ncol = 4, scales='free') +
+  facet_grid(Index~region) +
   geom_density(alpha = 0.7) +
-  scale_fill_manual(values = c(col[1],col[2], col[3])) +
+  scale_fill_manual(values = c(col[1],col[2], col[3]), name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022')) +
   #theme(legend.title = element_blank(), legend.position = 'top', legend.key.size = unit(3, 'mm')) +
   geom_vline(xintercept = 0, lty = 2) +
   labs(x = "Slope",
        y = "Posterior density")
+pdf(file = "Output/Supplemental/FigureS8_TUMIbeta.pdf",   # The directory you want to save the file in
+    width = 7, # The width of the plot in inches
+    height = 5)
+TUMI_beta
+dev.off()
+
+TUMI_alpha <-ggplot(TUMI, aes(x = alpha, fill = as.factor(period))) +
+  theme_bw() +
+  facet_grid(Index~region) +
+  geom_density(alpha = 0.7) +
+  scale_fill_manual(values = c(col[1],col[2], col[3]), name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022')) +
+  #theme(legend.title = element_blank(), legend.position = 'top', legend.key.size = unit(3, 'mm')) +
+  geom_vline(xintercept = 0, lty = 2) +
+  labs(x = "Intercept",
+       y = "Posterior density")
+pdf(file = "Output/Supplemental/FigureS9_TUMIalpha.pdf",   # The directory you want to save the file in
+    width = 7, # The width of the plot in inches
+    height = 5)
+TUMI_alpha
+dev.off()
 
 
 overlap.tumi <- NA

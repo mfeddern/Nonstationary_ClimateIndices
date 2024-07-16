@@ -31,6 +31,7 @@ library(rnaturalearthdata)
 
 here::i_am("Output/BayesianLinearModels.Rmd")
 
+col<-pnw_palette("Sunset2",3,type="discrete")
 
 bakundat <-read.csv(here('data/physical/Bakun/erdUI246hr_d68d_e898_8529.csv'))%>%
   bind_rows(read.csv(here('data/physical/Bakun/erdUI276hr_d68d_e898_8529.csv')))%>%
@@ -118,10 +119,10 @@ bakun_time <-bakun_summ%>%
   filter(Year_lag>1963 & Year_lag<1989)%>%
   mutate(period='1')%>%
   bind_rows(bakun_summ%>%
-              filter(Year_lag>=1989 & Year_lag<2014)%>%
+              filter(Year_lag>=1989 & Year_lag<2013)%>%
               mutate(period='2'))%>%
   bind_rows(bakun_summ%>%
-              filter(Year_lag>2013)%>%
+              filter(Year_lag>2012)%>%
               mutate(period='3'))%>%
   mutate(era.region = if_else(region == "GoA"&period == 1, 1, 
                         if_else(region == "GoA"&period == 2, 2, 
@@ -152,7 +153,7 @@ bakun_cum <- bakun_daily%>%
   group_by(station_id,Year,region)%>%
   reframe(upwelling_index_cum = cumsum(upwelling_index_sum))%>%
   add_column(YearDay=bakun_daily$YearDay)
-period2=data.frame(period2=c('1967 - 1988', '1989 - 2013', '2014 - 2022'), period=c('1','2','3'))
+period2=data.frame(period2=c('1967 - 1988', '1989 - 2012', '2013 - 2022'), period=c('1','2','3'))
 
 bakun_time <-bakun_cum%>%
   filter(Year>1963 & Year<1989)%>%
@@ -194,7 +195,7 @@ CUM<-ggplot(data = bakun_time%>%filter(station_id!='60N'&
   theme_bw()
 CUM
 
-pdf(file = "Output/Figures/CumulativeUpwelling.pdf",   # The directory you want to save the file in
+pdf(file = "Output/Phenology/CumulativeUpwelling.pdf",   # The directory you want to save the file in
     width = 8, # The width of the plot in inches
     height = 8)
 CUM
