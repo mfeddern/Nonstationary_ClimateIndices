@@ -878,6 +878,9 @@ overlap.southernW<-overlap.southernW%>%mutate(Survey="S. Copepods", region="NCC"
 
 
 
+
+
+
 #### Upwelling Model Runs ####
 
 ###### spring #####
@@ -1395,7 +1398,8 @@ STIW<-STIW%>%mutate(survey="STI",era.region2=period,
                                                                     ifelse(Index=="seasonal_NPH", "NPH","ONI"))))%>%
   dplyr::select(!period)%>%
   left_join(data%>%dplyr::select(region,era.region2,period)%>%distinct())%>%
-  mutate(Season='Winter', lag=0, era.region=era.region2)
+  mutate(Season='Winter', lag=0, era.region=era.region2)%>%
+  mutate(region=fct_relevel(region,c("Northern CC","Central CC","Southern CC")))
 
 
 ggplot(STIW, aes(x = beta, fill = as.factor(period))) +
@@ -1423,7 +1427,8 @@ LUSIW<-LUSIW%>%mutate(survey="LUSI",era.region2=period,
                                                                       ifelse(Index=="seasonal_NPH", "NPH","ONI"))))%>%
   dplyr::select(!period)%>%
   left_join(data%>%dplyr::select(region,era.region2,period)%>%distinct())%>%
-  mutate(Season='Winter', lag=0, era.region=era.region2)
+  mutate(Season='Winter', lag=0, era.region=era.region2)%>%
+  mutate(region=fct_relevel(region,c("Northern CC","Central CC","Southern CC")))
 
 
 ggplot(LUSIW, aes(x = beta, fill = as.factor(period), group=as.factor(era.region))) +
@@ -1448,7 +1453,8 @@ TUMIW<-TUMIW%>%mutate(survey="TUMI",era.region2=period,
                                                                       ifelse(Index=="seasonal_NPH", "NPH","ONI"))))%>%
   dplyr::select(!period)%>%
   left_join(data%>%dplyr::select(region,era.region2,period)%>%distinct())%>%
-  mutate(Season='Winter', lag=0, era.region=era.region2)
+  mutate(Season='Winter', lag=0, era.region=era.region2)%>%
+  mutate(region=fct_relevel(region,c("Northern CC","Central CC","Southern CC")))
 
 
 ggplot(TUMIW, aes(x = beta, fill = as.factor(period), group=as.factor(era.region))) +
@@ -1587,21 +1593,50 @@ bioup_CCC_spring<-mutate(bioup_CCC, period=ifelse(period==1,2,3),Survey="RREAS",
 bioup_spring<- bind_rows(bioup_CCC_spring,bioup_SCC_spring,
                          bioup_NCC_southern_spring,
                          bioup_NCC_northern_spring)%>%
-  mutate(season="Spring", lag=0)
+  mutate(season="Spring", lag=0)%>%
+  mutate(Survey= ifelse(Survey=='RREAS', "RREAS (CCC)",
+                    ifelse(Survey=="CALCOFI", "CALCOFI (SCC)",
+                        ifelse(Survey=="N. Copepod", "N. Copepod (NCC)",
+                            ifelse(Survey=="S. Copepod","S. Copepod (NCC)",Survey)))))%>%
+  distinct()%>%
+  mutate(Survey= fct_relevel(Survey, "N. Copepod (NCC)", 
+                             "S. Copepod (NCC)","RREAS (CCC)","CALCOFI (SCC)"))
 
 
- ggplot(bioup_spring, aes(x = beta, fill = as.factor(period), group=as.factor(period))) +
+BioUpbeta<- ggplot(bioup_spring%>%filter(Index!="Upwelling"), aes(x = beta, fill = as.factor(period), group=as.factor(period))) +
     theme_bw() +
-    facet_wrap(Index~Survey, ncol = 4, scales='free') +
+    facet_grid(Index~Survey, scales='free') +
     geom_density(alpha = 0.7) +
-    scale_fill_manual(values = c(col[1],col[2], col[3], 'grey')) +
+    scale_fill_manual(values = c(col[1],col[2], col[3], 'grey'),name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022')) +
     #theme(legend.title = element_blank(), legend.position = 'top', legend.key.size = unit(3, 'mm')) +
     geom_vline(xintercept = 0, lty = 2) +
     labs(x = "Slope",
          y = "Posterior density")
+ 
+ pdf(file = "Output/Supplemental/FigureS20_BioUpbeta.pdf",   # The directory you want to save the file in
+     width = 7, # The width of the plot in inches
+     height = 5)
+ BioUpbeta
+ dev.off()
+ 
+ BioUpalpha<-ggplot(bioup_spring%>%filter(Index!="Upwelling"), aes(x = alpha, fill = as.factor(period), group=as.factor(period))) +
+   theme_bw() +
+   facet_grid(Index~Survey, scales='free') +
+   geom_density(alpha = 0.7) +
+   scale_fill_manual(values = c(col[1],col[2], col[3], 'grey'),name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022')) +
+   #theme(legend.title = element_blank(), legend.position = 'top', legend.key.size = unit(3, 'mm')) +
+   geom_vline(xintercept = 0, lty = 2) +
+   labs(x = "Intercept",
+        y = "Posterior density")
 
  
-#### Full Data Results ####
+ pdf(file = "Output/Supplemental/FigureS21_BioUpalpha.pdf",   # The directory you want to save the file in
+     width = 7, # The width of the plot in inches
+     height = 5)
+ BioUpalpha
+ dev.off()
+ 
+ #### Full Data Results ####
 upwelling
  STI<-STI%>%dplyr::select(alpha,beta,Index,yfirst,ylast,survey,
                      region,period,Season,lag)%>%mutate(period=as.numeric(as.factor(period)))
@@ -1619,8 +1654,8 @@ upwelling
  
 Full_Results <- bind_rows(CALCOFI_Woffset,CALCOFI_W,CALCOFIoffset,CALCOFI,
           RREAS_Woffset,RREAS_W,RREASoffset,RREAS,
-          upwelling,
-          upwelling,TUMI,STI,LUSI,TUMIW,STIW,LUSIW,
+          #upwelling,
+          TUMI,STI,LUSI,TUMIW,STIW,LUSIW,
           northernW%>%mutate(period=ifelse(period==1,2,ifelse(period==2,3,4))),
           northern%>%mutate(period=ifelse(period==1,2,ifelse(period==2,3,4))), 
           southernW%>%mutate(period=ifelse(period==1,2,ifelse(period==2,3,4))),
@@ -1659,3 +1694,439 @@ climate_dat_cop%>%filter(region=="NCC")%>%
   
 Violin_Data%>%filter(Season=="Winter"&survey=="TUMI")
 
+###### supplment plots spring ####
+dat_plot<-climate_dat_cop%>%filter(season=="Spring")%>%
+  dplyr::select(Year_lag, season, period,seasonal_copepod_northern,seasonal_copepod_southern, seasonal_NPH,seasonal_NPGO,seasonal_PDO,seasonal_ONI)%>%
+  rename(NPH=seasonal_NPH,NPGO=seasonal_NPGO,PDO=seasonal_PDO,ONI=seasonal_ONI, 
+          'S. Copepod (NCC)'=seasonal_copepod_southern,  'N. Copepod (NCC)'=seasonal_copepod_northern)%>%
+  distinct()%>%
+  pivot_longer(!c(Year_lag, season, 'N. Copepod (NCC)','S. Copepod (NCC)', period), 
+               names_to = "Index_Name", values_to = "Index_Value")%>%
+  pivot_longer(!c(Year_lag, season,period, Index_Value, Index_Name), 
+               names_to = "trend", values_to = "estimate")%>%
+  distinct()%>%
+bind_rows(dat%>%filter(season=="Spring")%>%
+  dplyr::select(Year_lag, season, period,estimate, trend,seasonal_NPH,seasonal_NPGO,seasonal_PDO,seasonal_ONI)%>%
+  rename(NPH=seasonal_NPH,NPGO=seasonal_NPGO,PDO=seasonal_PDO,ONI=seasonal_ONI)%>%
+  distinct()%>%
+  pivot_longer(!c(Year_lag, season, period,estimate, trend), 
+               names_to = "Index_Name", values_to = "Index_Value")%>%
+    filter(trend=="RREAS"|trend=="CALCOFI")%>%
+    mutate(trend= ifelse(trend=='RREAS', "RREAS (CCC)",ifelse(trend=="CALCOFI", "CALCOFI (SCC)", NA)))%>%
+  distinct())%>%
+  mutate(trend = fct_relevel(trend, "N. Copepod (NCC)", 
+                             "S. Copepod (NCC)","RREAS (CCC)","CALCOFI (SCC)"))
+
+
+bio_dat<-ggplot(data = dat_plot%>%filter(season=="Spring"&period!=4), 
+       aes(y = estimate, x =Index_Value,col=as.factor(period))) +
+  facet_grid(Index_Name~trend, scales='free') +
+  geom_point(aes(col=as.factor(period)), alpha = 0.5) +
+  # geom_text(aes(label=Year_lag,col=as.factor(period))) +
+  geom_smooth(method = "lm", se = FALSE, aes(col=as.factor(period))) +
+  #geom_smooth(method = "lm", se = FALSE, col='grey') +
+  scale_y_continuous(name = "Index of Abundance") +
+  scale_color_manual(values =  col[1:3], name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022'))+
+  theme_bw()+
+  xlab("Climate Index Value")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  ggtitle("Spring")
+bio_dat
+pdf(file = "Output/Supplemental/FigureS16_BIOlinearregression.pdf",   # The directory you want to save the file in
+    width = 7, # The width of the plot in inches
+    height = 5)
+bio_dat
+dev.off()
+
+
+bio<-Full_Results%>%
+mutate(survey= ifelse(survey=='RREAS', "RREAS (CCC)",
+                      ifelse(survey=="CALCOFI", "CALCOFI (SCC)",
+                        ifelse(survey=="N. Copepod", "N. Copepod (NCC)",
+                               ifelse(survey=="Southern Copepod (NCC)","S. Copepod (NCC)",survey)))))%>%
+  distinct()%>%
+  mutate(survey = fct_relevel(survey, "N. Copepod (NCC)", 
+                             "S. Copepod (NCC)","RREAS (CCC)","CALCOFI (SCC)"))
+bio.beta<-ggplot(data = bio%>%
+                  filter(Season=="Spring"&period!=4&lag==0)%>%
+         filter(survey=="RREAS (CCC)"|survey=="CALCOFI (SCC)"|survey=="N. Copepod (NCC)"|survey=="S. Copepod (NCC)"),
+       aes(x = beta, fill = as.factor(period))) +
+  theme_bw() +
+  facet_grid(Index~survey, scales='free') +
+  geom_density(alpha = 0.7) +
+#  xlim(c(-1,1))+
+  scale_fill_manual(values = c(col[1],col[2], col[3]), name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022')) +
+  #theme(legend.title = element_blank(), legend.position = 'top', legend.key.size = unit(3, 'mm')) +
+  geom_vline(xintercept = 0, lty = 2) +
+  labs(x = "Slope",
+       y = "Posterior density")
+pdf(file = "Output/Supplemental/FigureS17_Biobeta.pdf",   # The directory you want to save the file in
+    width = 7, # The width of the plot in inches
+    height = 5)
+bio.beta
+dev.off()
+
+bio.alpha<-ggplot(data = bio%>%
+                   filter(Season=="Spring"&period!=4&lag==0)%>%
+                   filter(survey=="RREAS (CCC)"|survey=="CALCOFI (SCC)"|survey=="N. Copepod (NCC)"|survey=="S. Copepod (NCC)"),
+                 aes(x = alpha, fill = as.factor(period))) +
+  theme_bw() +
+  facet_grid(Index~survey, scales='free') +
+  geom_density(alpha = 0.7) +
+  #  xlim(c(-1,1))+
+  scale_fill_manual(values = c(col[1],col[2], col[3]), name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022')) +
+  #theme(legend.title = element_blank(), legend.position = 'top', legend.key.size = unit(3, 'mm')) +
+  geom_vline(xintercept = 0, lty = 2) +
+  labs(x = "Intercept",
+       y = "Posterior density")
+pdf(file = "Output/Supplemental/FigureS18_Bioalpha.pdf",   # The directory you want to save the file in
+    width = 7, # The width of the plot in inches
+    height = 5)
+bio.alpha
+dev.off()
+
+
+###### supplment plots winter ####
+dat_plot<-climate_dat_cop%>%filter(season=="Winter")%>%
+  dplyr::select(Year_lag, season, period,seasonal_copepod_northern,seasonal_copepod_southern, seasonal_NPH,seasonal_NPGO,seasonal_PDO,seasonal_ONI)%>%
+  rename(NPH=seasonal_NPH,NPGO=seasonal_NPGO,PDO=seasonal_PDO,ONI=seasonal_ONI, 
+         'S. Copepod (NCC)'=seasonal_copepod_southern,  'N. Copepod (NCC)'=seasonal_copepod_northern)%>%
+  distinct()%>%
+  pivot_longer(!c(Year_lag, season, 'N. Copepod (NCC)','S. Copepod (NCC)', period), 
+               names_to = "Index_Name", values_to = "Index_Value")%>%
+  pivot_longer(!c(Year_lag, season,period, Index_Value, Index_Name), 
+               names_to = "trend", values_to = "estimate")%>%
+  distinct()%>%
+  bind_rows(dat%>%filter(season=="Winter")%>%
+              dplyr::select(Year_lag, season, period,estimate, trend,seasonal_NPH,seasonal_NPGO,seasonal_PDO,seasonal_ONI)%>%
+              rename(NPH=seasonal_NPH,NPGO=seasonal_NPGO,PDO=seasonal_PDO,ONI=seasonal_ONI)%>%
+              distinct()%>%
+              pivot_longer(!c(Year_lag, season, period,estimate, trend), 
+                           names_to = "Index_Name", values_to = "Index_Value")%>%
+              filter(trend=="RREAS"|trend=="CALCOFI")%>%
+              mutate(trend= ifelse(trend=='RREAS', "RREAS (CCC)",ifelse(trend=="CALCOFI", "CALCOFI (SCC)", NA)))%>%
+              distinct())%>%
+  mutate(trend = fct_relevel(trend, "N. Copepod (NCC)", 
+                             "S. Copepod (NCC)","RREAS (CCC)","CALCOFI (SCC)"))
+
+
+bio_dat<-ggplot(data = dat_plot%>%filter(season=="Winter"&period!=4), 
+                aes(y = estimate, x =Index_Value,col=as.factor(period))) +
+  facet_grid(Index_Name~trend, scales='free') +
+  geom_point(aes(col=as.factor(period)), alpha = 0.5) +
+  # geom_text(aes(label=Year_lag,col=as.factor(period))) +
+  geom_smooth(method = "lm", se = FALSE, aes(col=as.factor(period))) +
+  #geom_smooth(method = "lm", se = FALSE, col='grey') +
+  scale_y_continuous(name = "Index of Abundance") +
+  scale_color_manual(values =  col[1:3], name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022'))+
+  theme_bw()+
+  xlab("Climate Index Value")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  ggtitle("Winter")
+bio_dat
+pdf(file = "Output/Supplemental/FigureS31_BIOlinearregressionW.pdf",   # The directory you want to save the file in
+    width =7, # The width of the plot in inches
+    height = 5)
+bio_dat
+dev.off()
+
+
+bio<-Full_Results%>%
+  mutate(survey= ifelse(survey=='RREAS', "RREAS (CCC)",
+                        ifelse(survey=="CALCOFI", "CALCOFI (SCC)",
+                               ifelse(survey=="N. Copepod", "N. Copepod (NCC)",
+                                      ifelse(survey=="Southern Copepod (NCC)","S. Copepod (NCC)",survey)))))%>%
+  distinct()%>%
+  mutate(survey = fct_relevel(survey, "N. Copepod (NCC)", 
+                              "S. Copepod (NCC)","RREAS (CCC)","CALCOFI (SCC)"))
+bio.beta<-ggplot(data = bio%>%
+                   filter(Season=="Winter"&period!=4&lag==0)%>%
+                   filter(survey=="RREAS (CCC)"|survey=="CALCOFI (SCC)"|survey=="N. Copepod (NCC)"|survey=="S. Copepod (NCC)"),
+                 aes(x = beta, fill = as.factor(period))) +
+  theme_bw() +
+  facet_grid(Index~survey, scales='free') +
+  geom_density(alpha = 0.7) +
+  #  xlim(c(-1,1))+
+  scale_fill_manual(values = c(col[1],col[2], col[3]), name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022')) +
+  #theme(legend.title = element_blank(), legend.position = 'top', legend.key.size = unit(3, 'mm')) +
+  geom_vline(xintercept = 0, lty = 2) +
+  labs(x = "Slope",
+       y = "Posterior density")
+pdf(file = "Output/Supplemental/FigureS32_BiobetaW.pdf",   # The directory you want to save the file in
+    width = 7, # The width of the plot in inches
+    height = 5)
+bio.beta
+dev.off()
+
+bio.alpha<-ggplot(data = bio%>%
+                    filter(Season=="Winter"&period!=4&lag==0)%>%
+                    filter(survey=="RREAS (CCC)"|survey=="CALCOFI (SCC)"|survey=="N. Copepod (NCC)"|survey=="S. Copepod (NCC)"),
+                  aes(x = alpha, fill = as.factor(period))) +
+  theme_bw() +
+  facet_grid(Index~survey, scales='free') +
+  geom_density(alpha = 0.7) +
+  #  xlim(c(-1,1))+
+  scale_fill_manual(values = c(col[1],col[2], col[3]), name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022')) +
+  #theme(legend.title = element_blank(), legend.position = 'top', legend.key.size = unit(3, 'mm')) +
+  geom_vline(xintercept = 0, lty = 2) +
+  labs(x = "Intercept",
+       y = "Posterior density")
+pdf(file = "Output/Supplemental/FigureS33_BioalphaW.pdf",   # The directory you want to save the file in
+    width = 7, # The width of the plot in inches
+    height = 5)
+bio.alpha
+dev.off()
+
+data<- climate_dat%>%filter(season=="Winter"&region!='GoA'&Year_lag<2023&period!=4)%>%
+  #  filter(Year_lag!=2022&Year_lag!=2015)%>%
+  distinct()%>%
+  left_join(eras)%>%
+  mutate(region=fct_relevel(region,c("Northern CC","Central CC","Southern CC")))
+index.names <-c("PDO", "NPGO", "NPH", "ONI")
+region.names<-unique(climate_dat$region)
+period.names <- unique(climate_dat$period)
+
+data.phe.lm<-data%>%filter(season=="Winter")%>%
+  dplyr::select(Year_lag, season, period,region,stand_tumi,stand_lusi,stand_sti,stand_bakun_seasonally,
+                seasonal_NPH,seasonal_NPGO,seasonal_PDO,seasonal_ONI)%>%
+  rename(NPH=seasonal_NPH,NPGO=seasonal_NPGO,PDO=seasonal_PDO,ONI=seasonal_ONI)%>%
+  distinct()%>%
+  pivot_longer(!c(Year_lag, season, period,region,stand_tumi,stand_lusi,stand_sti,stand_bakun_seasonally), 
+               names_to = "Index_Name", values_to = "Index_Value")%>%
+  pivot_longer(!c(Year_lag, season,period,region, Index_Value, Index_Name), 
+               names_to = "Up_Name", values_to = "Up_Value")%>%
+  distinct()
+
+sti_datW <-ggplot(data = data.phe.lm%>%filter(Up_Name=="stand_sti"&period!=4), aes(y = Up_Value, x =Index_Value,col=as.factor(period))) +
+  facet_grid(Index_Name~region, scales='free') +
+  geom_point(aes(col=as.factor(period)), alpha = 0.5) +
+  # geom_text(aes(label=Year_lag,col=as.factor(period))) +
+  geom_smooth(method = "lm", se = FALSE, aes(col=as.factor(period))) +
+  #geom_smooth(method = "lm", se = FALSE, col='grey') +
+  scale_y_continuous(name = "STI") +
+  scale_color_manual(values =  col[1:3], name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022'))+
+  theme_bw()+
+  xlab("Climate Index Value")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  ggtitle("Winter")
+sti_datW
+pdf(file = "Output/Supplemental/FigureS25_STIlinearregressionW.pdf",   # The directory you want to save the file in
+    width = 7, # The width of the plot in inches
+    height = 5)
+sti_datW
+dev.off()
+
+
+tumi_datW <-ggplot(data = data.phe.lm%>%filter(Up_Name=="stand_tumi"&period!=4), aes(y = Up_Value, x =Index_Value,col=as.factor(period))) +
+  facet_grid(Index_Name~region, scales='free') +
+  geom_point(aes(col=as.factor(period)), alpha = 0.5) +
+  # geom_text(aes(label=Year_lag,col=as.factor(period))) +
+  geom_smooth(method = "lm", se = FALSE, aes(col=as.factor(period))) +
+  #geom_smooth(method = "lm", se = FALSE, col='grey') +
+  scale_y_continuous(name = "TUMI") +
+  scale_color_manual(values =  col[1:3], name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022'))+
+  theme_bw()+
+  xlab("Climate Index Value")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  ggtitle("Winter")
+tumi_datW
+pdf(file = "Output/Supplemental/FigureS22_TUMIlinearregressionW.pdf",   # The directory you want to save the file in
+    width = 7, # The width of the plot in inches
+    height = 5)
+tumi_datW
+dev.off()
+
+
+lusi_datW <-ggplot(data = data.phe.lm%>%filter(Up_Name=="stand_lusi"&period!=4), aes(y = Up_Value, x =Index_Value,col=as.factor(period))) +
+  facet_grid(Index_Name~region, scales='free') +
+  geom_point(aes(col=as.factor(period)), alpha = 0.5) +
+  # geom_text(aes(label=Year_lag,col=as.factor(period))) +
+  geom_smooth(method = "lm", se = FALSE, aes(col=as.factor(period))) +
+  #geom_smooth(method = "lm", se = FALSE, col='grey') +
+  scale_y_continuous(name = "LUSI") +
+  scale_color_manual(values =  col[1:3], name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022'))+
+  theme_bw()+
+  xlab("Climate Index Value")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  ggtitle("Winter")
+lusi_datW
+pdf(file = "Output/Supplemental/FigureS28_lusilinearregressionW.pdf",   # The directory you want to save the file in
+    width = 7, # The width of the plot in inches
+    height = 5)
+lusi_datW
+dev.off()
+
+STI_betaW <-ggplot(STIW, aes(x = beta, fill = as.factor(period))) +
+  theme_bw() +
+  facet_grid(Index~region) +
+  geom_density(alpha = 0.7) +
+  scale_fill_manual(values = c(col[1],col[2], col[3]), name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022')) +
+  #theme(legend.title = element_blank(), legend.position = 'top', legend.key.size = unit(3, 'mm')) +
+  geom_vline(xintercept = 0, lty = 2) +
+  labs(x = "Slope",
+       y = "Posterior density")
+
+pdf(file = "Output/Supplemental/FigureS26_STIbetaW.pdf",   # The directory you want to save the file in
+    width = 7, # The width of the plot in inches
+    height = 5)
+STI_betaW
+dev.off()
+
+STI_alphaW <-ggplot(STIW, aes(x = alpha, fill = as.factor(period))) +
+  theme_bw() +
+  facet_grid(Index~region) +
+  geom_density(alpha = 0.7) +
+  scale_fill_manual(values = c(col[1],col[2], col[3]), name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022')) +
+  #theme(legend.title = element_blank(), legend.position = 'top', legend.key.size = unit(3, 'mm')) +
+  geom_vline(xintercept = 0, lty = 2) +
+  labs(x = "Intercept",
+       y = "Posterior density")
+
+pdf(file = "Output/Supplemental/FigureS27_STIalphaW.pdf",   # The directory you want to save the file in
+    width = 7, # The width of the plot in inches
+    height = 5)
+STI_alphaW
+dev.off()
+
+TUMI_betaW <-ggplot(TUMIW, aes(x = beta, fill = as.factor(period))) +
+  theme_bw() +
+  facet_grid(Index~region) +
+  geom_density(alpha = 0.7) +
+  scale_fill_manual(values = c(col[1],col[2], col[3]), name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022')) +
+  #theme(legend.title = element_blank(), legend.position = 'top', legend.key.size = unit(3, 'mm')) +
+  geom_vline(xintercept = 0, lty = 2) +
+  labs(x = "Slope",
+       y = "Posterior density")
+
+pdf(file = "Output/Supplemental/FigureS23_TUMIbetaW.pdf",   # The directory you want to save the file in
+    width = 7, # The width of the plot in inches
+    height = 5)
+TUMI_betaW
+dev.off()
+
+TUMI_alphaW <-ggplot(TUMIW, aes(x = alpha, fill = as.factor(period))) +
+  theme_bw() +
+  facet_grid(Index~region) +
+  geom_density(alpha = 0.7) +
+  scale_fill_manual(values = c(col[1],col[2], col[3]), name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022')) +
+  #theme(legend.title = element_blank(), legend.position = 'top', legend.key.size = unit(3, 'mm')) +
+  geom_vline(xintercept = 0, lty = 2) +
+  labs(x = "Intercept",
+       y = "Posterior density")
+
+pdf(file = "Output/Supplemental/FigureS24_TUMIalphaW.pdf",   # The directory you want to save the file in
+    width = 7, # The width of the plot in inches
+    height = 5)
+TUMI_alphaW
+dev.off()
+
+
+LUSI_betaW <-ggplot(LUSIW, aes(x = beta, fill = as.factor(period))) +
+  theme_bw() +
+  facet_grid(Index~region) +
+  geom_density(alpha = 0.7) +
+  scale_fill_manual(values = c(col[1],col[2], col[3]), name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022')) +
+  #theme(legend.title = element_blank(), legend.position = 'top', legend.key.size = unit(3, 'mm')) +
+  geom_vline(xintercept = 0, lty = 2) +
+  labs(x = "Slope",
+       y = "Posterior density")
+
+pdf(file = "Output/Supplemental/FigureS29_LUSIbetaW.pdf",   # The directory you want to save the file in
+    width = 7, # The width of the plot in inches
+    height = 5)
+LUSI_betaW
+dev.off()
+
+LUSI_alphaW <-ggplot(LUSIW, aes(x = alpha, fill = as.factor(period))) +
+  theme_bw() +
+  facet_grid(Index~region) +
+  geom_density(alpha = 0.7) +
+  scale_fill_manual(values = c(col[1],col[2], col[3]), name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022')) +
+  #theme(legend.title = element_blank(), legend.position = 'top', legend.key.size = unit(3, 'mm')) +
+  geom_vline(xintercept = 0, lty = 2) +
+  labs(x = "Intercept",
+       y = "Posterior density")
+
+pdf(file = "Output/Supplemental/FigureS30_LUSIalphaW.pdf",   # The directory you want to save the file in
+    width = 7, # The width of the plot in inches
+    height = 5)
+LUSI_alphaW
+dev.off()
+
+#### Temporal Lag ####
+dat_plot<-dat%>%filter(season=="Spring"&trend!="SEA")%>%
+  dplyr::select(Year_lag, estimateoffset1,season, period,trend, seasonal_NPH,seasonal_NPGO,seasonal_PDO,seasonal_ONI)%>%
+  rename(NPH=seasonal_NPH,NPGO=seasonal_NPGO,PDO=seasonal_PDO,ONI=seasonal_ONI)%>%
+  distinct()%>%
+  pivot_longer(!c(Year_lag,estimateoffset1,trend, season, period), 
+               names_to = "Index_Name", values_to = "Index_Value")%>%
+  distinct()%>%
+              mutate(trend= ifelse(trend=='RREAS', "RREAS (CCC)",ifelse(trend=="CALCOFI", "CALCOFI (SCC)", NA)))%>%
+              distinct()
+
+bio_dat<-ggplot(data =na.omit(dat_plot%>%filter(season=="Spring")), 
+                aes(y = estimateoffset1, x =Index_Value,col=as.factor(period))) +
+  facet_grid(Index_Name~trend, scales='free') +
+  geom_point(aes(col=as.factor(period)), alpha = 0.5) +
+  # geom_text(aes(label=Year_lag,col=as.factor(period))) +
+  geom_smooth(method = "lm", se = FALSE, aes(col=as.factor(period))) +
+  #geom_smooth(method = "lm", se = FALSE, col='grey') +
+  scale_y_continuous(name = "Index of Abundance") +
+  scale_color_manual(values =  col[1:3], name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022'))+
+  theme_bw()+
+  xlab("Climate Index Value")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  ggtitle("1-year Lag")
+bio_dat
+pdf(file = "Output/Supplemental/FigureS33_BIOlinearregressionLAG.pdf",   # The directory you want to save the file in
+    width = 7, # The width of the plot in inches
+    height = 5)
+bio_dat
+dev.off()
+
+
+bio<-Full_Results%>%
+  mutate(survey= ifelse(survey=='RREAS', "RREAS (CCC)",
+                        ifelse(survey=="CALCOFI", "CALCOFI (SCC)",
+                               ifelse(survey=="N. Copepod", "N. Copepod (NCC)",
+                                      ifelse(survey=="Southern Copepod (NCC)","S. Copepod (NCC)",survey)))))%>%
+  distinct()%>%
+  mutate(survey = fct_relevel(survey, "N. Copepod (NCC)", 
+                              "S. Copepod (NCC)","RREAS (CCC)","CALCOFI (SCC)"))
+bio.beta<-ggplot(data = bio%>%
+                   filter(Season=="Spring"&period!=4&lag==1)%>%
+                   filter(survey=="RREAS (CCC)"|survey=="CALCOFI (SCC)"|survey=="N. Copepod (NCC)"|survey=="S. Copepod (NCC)"),
+                 aes(x = beta, fill = as.factor(period))) +
+  theme_bw() +
+  facet_grid(Index~survey, scales='free') +
+  geom_density(alpha = 0.7) +
+  #  xlim(c(-1,1))+
+  scale_fill_manual(values = c(col[1],col[2], col[3]), name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022')) +
+  #theme(legend.title = element_blank(), legend.position = 'top', legend.key.size = unit(3, 'mm')) +
+  geom_vline(xintercept = 0, lty = 2) +
+  labs(x = "Slope",
+       y = "Posterior density")
+pdf(file = "Output/Supplemental/FigureS34_Biobeta.pdf",   # The directory you want to save the file in
+    width = 7, # The width of the plot in inches
+    height = 5)
+bio.beta
+dev.off()
+
+bio.alpha<-ggplot(data = bio%>%
+                    filter(Season=="Spring"&period!=4&lag==1)%>%
+                    filter(survey=="RREAS (CCC)"|survey=="CALCOFI (SCC)"|survey=="N. Copepod (NCC)"|survey=="S. Copepod (NCC)"),
+                  aes(x = alpha, fill = as.factor(period))) +
+  theme_bw() +
+  facet_grid(Index~survey, scales='free') +
+  geom_density(alpha = 0.7) +
+  #  xlim(c(-1,1))+
+  scale_fill_manual(values = c(col[1],col[2], col[3]), name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022')) +
+  #theme(legend.title = element_blank(), legend.position = 'top', legend.key.size = unit(3, 'mm')) +
+  geom_vline(xintercept = 0, lty = 2) +
+  labs(x = "Intercept",
+       y = "Posterior density")
+pdf(file = "Output/Supplemental/FigureS34_Bioalpha.pdf",   # The directory you want to save the file in
+    width = 7, # The width of the plot in inches
+    height = 5)
+bio.alpha
+dev.off()
