@@ -9,7 +9,7 @@ library(LaCroixColoR)
 install.packages("devtools")
 devtools::install_github("johannesbjork/LaCroixColoR")
 
-red_green_colors <- lacroix_palette("Pamplemousse", type = "discrete")
+red_green_colors <- lacroix_palette("Berry",n=6, type = "continuous")
 
 
 # convert to the three dichromacy approximations
@@ -21,6 +21,7 @@ tritan <- dichromat(red_green_colors, type = "tritan")
 # plot for comparison
 layout(matrix(1:4, nrow = 4)); par(mar = rep(1, 4))
 plotColorPalette(red_green_colors)
+red_green_colors
 recolorize::plotColorPalette(protan, main = "Protanopia")
 recolorize::plotColorPalette(deutan, main = "Deutanopia")
 recolorize::plotColorPalette(tritan, main = "Tritanopia")
