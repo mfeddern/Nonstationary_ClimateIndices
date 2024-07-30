@@ -222,17 +222,17 @@ mean_beta$survey <- factor(mean_beta$survey,
 dist_phe<-ggplot(mean_beta%>%filter(survey=="TUMI"|survey=="STI"|survey=="LUSI")%>%
          filter(Season=="Spring")%>%filter(lag==0), aes(x = median_beta, y=Index,col = as.factor(period))) +
   theme_bw() +
-  geom_errorbar(aes(xmin=sd_beta_80$CI_low, xmax=sd_beta_80$CI_high),width = 0, lwd=0.3, position =ggstance::position_dodgev(height=dodge))+
-  geom_errorbar(aes(xmin=sd_beta_50$CI_low, xmax=sd_beta_50$CI_high),width = 0, lwd=0.8, position =ggstance::position_dodgev(height=dodge))+
+  geom_errorbar(aes(xmin=sd_beta_95$CI_low, xmax=sd_beta_80$CI_high),width = 0, lwd=0.3, position =ggstance::position_dodgev(height=dodge))+
+  geom_errorbar(aes(xmin=sd_beta_80$CI_low, xmax=sd_beta_50$CI_high),width = 0, lwd=0.8, position =ggstance::position_dodgev(height=dodge))+
   geom_point(aes(col = as.factor(period)), cex=1.75, position = ggstance::position_dodgev(height=dodge))+
   ggh4x::facet_grid2(region~survey) +
   ylab("Climate Index") +
   guides(col=guide_legend(title="Period"))+
-  scale_colour_manual(values = c(col2[1],col2[2], col2[3]))+
+  scale_colour_manual(values = c(col[1],col[2], col[3]), name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022')) +
   geom_vline(xintercept = 0, lty = 2) +
   xlab("Slope") +
   theme(legend.position="bottom") 
-
+dist_phe
 dist_bio<-ggplot(mean_beta%>%
                    filter(survey=="CALCOFI"&period!=4)%>%
                    bind_rows(mean_beta%>%filter(survey=="RREAS"&period!=1&period!=4|survey=="N. Copepod"&period!=1&period!=4|survey=="S. Copepod"&period!=1&period!=4))%>%
@@ -245,7 +245,7 @@ dist_bio<-ggplot(mean_beta%>%
   facet_wrap(~survey,ncol=1) +
 
   ylab("") +
-  scale_colour_manual(values = col2)+
+  scale_colour_manual(values = col)+
   geom_vline(xintercept = 0, lty = 2) +
   xlab("Slope") +
   theme(legend.position="none") 
@@ -261,13 +261,13 @@ dist_bio2<-ggplot(mean_beta%>%filter(survey=="CALCOFI")%>%
   geom_point(aes(col = as.factor(period)), cex=1.75,position = ggstance::position_dodgev(height=dodge))+
   facet_wrap(~survey,ncol=1) +
   ylab("Upwelling Index") +
-  scale_colour_manual(values = col2)+
+  scale_colour_manual(values = col)+
   geom_vline(xintercept = 0, lty = 2) +
   xlab("Slope") +
   theme(legend.position="none") 
 dist_bio2 
 
-pdf("Output/Distribution.pdf", 10.5,5) 
+pdf("Output/Distribution.pdf", 11,5) 
 ggarrange(dist_phe,dist_bio,dist_bio2, ncol = 3, labels = c("A", "B", "C"), 
           widths=c(4,2,2), heights=c(2,2,1.75))
 dev.off()

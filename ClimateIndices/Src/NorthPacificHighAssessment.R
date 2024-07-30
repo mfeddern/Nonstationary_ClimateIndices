@@ -127,12 +127,13 @@ a.plot <-ggplot(data=spring.schroeder,aes(abs(mean.x-360),mean.y, label=Year,gro
   geom_errorbar(data=means,aes(xmin = abs(mean.x-360)-sd.x, xmax=  abs(mean.x-360)+sd.x), width=0.5) +
   scale_colour_manual(values = c(col[1], col[2], col[3]), name = "") +
   geom_hline(yintercept=mean(spring.schroeder$mean.y),lty=2, col='grey')+
-  geom_vline(xintercept=mean(spring.schroeder$mean.x), lty=2, col='grey')+
+  geom_vline(xintercept=abs(mean(spring.schroeder$mean.x-360)), lty=2, col='grey')+
   scale_x_reverse(lim=c(147,135))+
   ylab('Latitude (ºN)')+
   theme_bw() +
   xlab('Longitude (ºW)')+
-  theme(legend.position = "none")
+  theme(  panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),legend.position = "none")
 a.plot
 means2<-means2%>%mutate(Year_win=Year)
 a.plotw <-ggplot(data=winter.schroeder,aes(abs(mean.x-360),mean.y, label=Year_win,group=era.lab,col=era.lab))+
@@ -175,8 +176,6 @@ j.plot <-ggplot(data=spring.schroeder,aes(y=mean.max,x=mean.area, label=Year,gro
   geom_point(alpha=0.4)+
  # ggtitle("North Pacific High\n Areal Extent and Intensity") +
   geom_point(data=means)+
-  theme(axis.title.x = element_blank(), plot.title = element_text(size=8,hjust = 0.5), axis.text = element_text(size=7),
-        axis.title.y = element_text(size=7)) +
   geom_errorbar(data=means,aes(xmin = mean.area-sd.area, xmax= mean.area+sd.area), width=0.5) +
   geom_errorbar(data=means,aes(ymin = mean.max-sd.intensity, ymax= mean.max+sd.intensity), width=0.5) +
   scale_colour_manual(values = c(col[1], col[2], col[3]), name = "") +
@@ -185,7 +184,9 @@ j.plot <-ggplot(data=spring.schroeder,aes(y=mean.max,x=mean.area, label=Year,gro
   theme_bw()+
   geom_hline(yintercept=mean(spring.schroeder$mean.max),lty=2, col='grey')+
   geom_vline(xintercept=mean(spring.schroeder$mean.area), lty=2, col='grey')+
-  xlab(expression("North Pacific High Area "~(10^6 ~km^2)))
+  xlab(expression("North Pacific High Area "~(10^6 ~km^2)))+
+  theme( panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),legend.position = c(0.15, 0.7), legend.key.size = unit(4, "mm"),legend.text = element_text(size = 10))
 j.plot
 
 j.plotw <-ggplot(data=winter.schroeder,aes(y=mean.max,x=mean.area, label=Year_win,group=era.lab,col=era.lab))+
@@ -319,7 +320,9 @@ c.plot <- ggplot(plot.dat, aes(year, mean.max)) +
  # ggtitle("North Pacific High Intensity Variability (Spring)") +
   geom_vline(xintercept = 1988.5, lty=2, size=0.3) +
   geom_vline(xintercept = 2012.5, lty=2, size=0.3) +
-  xlim(1967,2020)
+  xlim(1967,2020)+
+theme(panel.grid.major = element_blank(),
+panel.grid.minor = element_blank())
 c.plot
 
 # and calculate standard deviation over 11-year rolling windows for intensity
@@ -577,7 +580,7 @@ analysis2<-merge(X_PDO_SLP,analysis2)%>%
   filter(analysis2!='X')
 
 SLP_coast2<- ggplot() + 
- geom_raster(data=na.omit(ddd%>%filter(var=="SLP")), aes(x=longitude,y=latitude,fill = coefficient)) + 
+ geom_raster(data=na.omit(ddd%>%filter(var=="SLP")), aes(x=longitude,y=latitude,fill = coefficient*0.01)) + 
    facet_grid(index~period) +
   geom_polygon(data=bufferNCC,aes(x=x,y=y),color='black',fill=NA)+
   geom_polygon(data=bufferCCC,aes(x=x,y=y),color='black',fill=NA)+
@@ -585,10 +588,11 @@ SLP_coast2<- ggplot() +
   geom_sf(data=world, col="black", fill="darkgoldenrod3") +
   coord_sf(xlim=c(230,245), ylim=c(30,50)) +
   scale_fill_gradient2(low = "blue", high = "red") + 
-  ggtitle("Spring SLP Anomalies (Pa) vs. Climate Indices")+
+  ggtitle("Spring SLP Anomalies (hPa) vs. Climate Indices")+
   ylab("")+
   xlab("")+
   scale_x_continuous(breaks = c(230,240))+
+  labs(fill="Coefficient")+
   #geom_contour(data=X_cc, aes(x=longitude,y=latitude,z = coefficient), col="lightgrey", lwd=0.5)+
   theme(strip.background=element_rect(colour="black",
                                     fill="white"),panel.background = element_rect(fill = "white"),plot.title = element_text(hjust = 0.5), panel.border = element_rect(fill = NA))
@@ -620,6 +624,9 @@ pdf("Output/MapSpace.pdf", 8,5)
 ggarrange(map, z.plot,  ncol=2,labels = c("A", "B"))
 dev.off()
 
+pdf("Output/Map.pdf", 4,5) 
+map
+dev.off()
 pdf("Output/Fig SLP and NPH.pdf", 11,6.5) 
 ggarrange(ggarrange(a.plot,j.plot,c.plot, nrow = 3, labels = c("A", "B", "C")),
           SLP_coast2,
