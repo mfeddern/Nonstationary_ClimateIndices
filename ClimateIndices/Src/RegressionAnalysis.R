@@ -22,7 +22,7 @@ set.seed(1234)
 #### Importing data ####
 
 # start by loading NE Pacific SST/SLP - this may need to be moved into project if not locally stored
-nc <- nc_open(here("som/copernicus_jul10.nc"))
+nc <- nc_open(here("copernicus_jul10.nc"))
 #nc.wind <- nc_open(here("som/copernicus_jul10_wind.nc"))
 #climate_dat <-readRDS(here('data/physical/climate_dat_upwelling.rds'))
 
