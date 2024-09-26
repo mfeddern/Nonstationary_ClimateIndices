@@ -12,6 +12,9 @@ library(ggpubr)
 library(mgcv)
 library(PNWColors)
 library(ggspatial)
+library(sf)
+library(terra)
+library(raster)
 
 # reading in the data 
 schroeder.nph <-read.csv('data/physical/year_mon_area_max_x_y_lon_lat_2023.csv')%>%
@@ -239,6 +242,9 @@ g.plot <-ggplot(data=spring.schroeder,aes(x=mean.max,y=mean.area, group=era.lab,
             aes(x=mean.max,y=mean.area,label=Year),col='black')+
   ylab(expression("North Pacific High Area "~(10^6 ~km^2)))
 g.plot
+
+
+
 #check TS to look at variables through time for spring
 plot(spring.schroeder$Year, spring.schroeder$xy, type="l")
 plot(spring.schroeder$Year, spring.schroeder$mean.y, type="l")
@@ -312,9 +318,47 @@ mod <- gam(mean.max ~ s(year), data=plot.dat)
 pred <- predict(mod, se=T, newdata = plot.dat)
 plot.dat$mean <- pred$fit  
 
-c.plot <- ggplot(plot.dat, aes(year, mean.max)) +
+plot.dat<-plot.dat%>%mutate(Year=year)
+plot.dat2 <-spring.schroeder%>%
+  select(Year, mean.x, mean.y,mean.max, mean.area,era,era.lab)%>%
+  rename(mean.max.full=mean.max)%>%
+  left_join(plot.dat%>%select(Year, mean, mean.max))
+plot.dat2[is.na(plot.dat2)] <- 1.01
+plot.dat2 <-plot.dat2%>%left_join(plot.dat%>%select(Year,year))
+max_first  <- max(plot.dat2$mean.max)   # Specify max of first y axis
+max_second <- max(plot.dat2$mean.max.full) # Specify max of second y axis
+min_first  <- min(plot.dat2$mean.max)   # Specify min of first y axis
+min_second <- min(plot.dat2$mean.max.full) # Specify min of second y axis
+
+# scale and shift variables calculated based on desired mins and maxes
+scale = (max_second - min_second)/(max_first - min_first)
+shift = min_first - min_second
+
+# Function to scale secondary axis
+scale_function <- function(x, scale, shift){
+  return ((x)*scale - shift)
+}
+
+# Function to scale secondary variable values
+inv_scale_function <- function(x, scale, shift){
+  return ((x + shift)/scale)
+}
+
+
+i.plot<-ggplot(data=plot.dat2,aes(x=Year,y=mean.max))+
+  geom_line(size=0.2,aes(x=year))+
+  geom_point(aes(x=Year, y=inv_scale_function(mean.max.full, scale, shift)), col='gray', alpha=.5) +
+  geom_line(aes(x=year, y=mean), color=cb[6], size=0.6) +
+  theme(axis.title.x = element_blank(), plot.title = element_text(size=8,hjust = 0.5), axis.text = element_text(size=7),
+        axis.title.y = element_text(size=7)) +
+  scale_y_continuous(limits = c(min_first, max_first), sec.axis = sec_axis(~scale_function(., scale, shift), name='North Pacific High \n Intensity (hPa)')) +
+  ylab('Standard deviation \n (hPa)')+
+  theme_bw() 
+i.plot
+
+c.plot <- ggplot(plot.dat, aes(Year, mean.max)) +
   geom_line(size=0.2) +
-  geom_line(aes(year, mean), color=cb[6], size=0.4)  +  theme_bw() +
+  geom_line(aes(Year, mean), color=cb[6], size=0.4)  +  theme_bw() +
   ylab("Standard deviation \n (hPa)") +
   xlab("")+
  # ggtitle("North Pacific High Intensity Variability (Spring)") +
@@ -353,7 +397,7 @@ c.plotw <- ggplot(plot.dat, aes(year, mean.max)) +
 c.plotw
 
 # first, make a data frame
-plot.dat <- data.frame(year=1972:2018, sd=na.omit(NPH.area.sd))
+plot.dat <- data.frame(year=1972:2019, sd=na.omit(NPH.area.sd))
 # fit the model
 mod <- gam(mean.area.anom ~ s(year), data=plot.dat)
 pred <- predict(mod, se=T, newdata = plot.dat)
@@ -370,59 +414,7 @@ e.plot <- ggplot(plot.dat, aes(year, mean.area.anom)) +
   xlim(1967,2020)
 e.plot
 
-#TS for summer data
-max.ts <- ts(data=summer.schroeder%>%select(mean.max), 1967, 2023, frequency=1)
-# fit breakpoint model
-bp.max <- breakpoints(max.ts ~ 1)
-summary(bp.max)
 
-NPH.max.sd <- rollapply(summer.schroeder%>%select(mean.max), 11, sd, fill=NA)
-plot(1967:2023, NPH.max.sd , type="l")
-
-# first, make a data frame
-plot.dat <- data.frame(year=1972:2018, sd=na.omit(NPH.max.sd))
-#plot.dat <- data.frame(year=1969:2021, sd=na.omit(NPH.max.sd))
-
-# fit the model
-mod <- gam(mean.max ~ s(year), data=plot.dat)
-pred <- predict(mod, se=T, newdata = plot.dat)
-plot.dat$mean <- pred$fit  
-
-d.plot <- ggplot(plot.dat, aes(year, mean.max)) +
-  geom_line(size=0.2) +
-  geom_line(aes(year, mean), color=cb[6], size=0.4) +   theme_bw() +
-  ylab("Standard deviation (hPa)") +
-  xlab("Year")+
-  ggtitle("North Pacific High Intensity Variability (Summer)") +
-  geom_vline(xintercept = 1988.5, lty=2, size=0.3) +
-  geom_vline(xintercept = 2012.5, lty=2, size=0.3) +
-  xlim(1967,2020)
-d.plot
-
-png("Output/Fig 1.png", 6, 11, units="cm", res=300) 
-ggarrange(a.plot, b.plot, c.plot, d.plot,labels = c("A", "B", "C", "D"),  
-          font.label = list(size = 10, face="plain"), nrow=4)
-dev.off()
-
-pdf("Output/Fig 1.pdf", 6,11) 
-ggarrange(a.plot, g.plot, b.plot, c.plot,labels = c("A", "B", "C", "D"),  
-          font.label = list(size = 12, face="plain"), nrow=4)
-dev.off()
-
-pdf("Output/Fig 1v1.pdf", 6,11) 
-ggarrange(a.plot, b.plot, labels = c("A", "B"),  
-          font.label = list(size = 12, face="plain"), nrow=2)
-dev.off()
-
-pdf("Output/Fig 1v2.pdf", 6,11) 
-ggarrange( g.plot, c.plot,d.plot,labels = c("A", "B", "C"),  
-          font.label = list(size = 12, face="plain"), nrow=3)
-dev.off()
-
-pdf("Output/Fig 1v3.pdf", 5,7) 
-ggarrange( a.plot, h.plot,c.plot,labels = c("A", "B", "C"),  
-           font.label = list(size = 12, face="plain"), nrow=3)
-dev.off()
 #TS for winter data
 max.ts <- ts(data=winter.schroeder%>%select(mean.max), 1967, 2023, frequency=1)
 # fit breakpoint model
@@ -430,10 +422,10 @@ bp.max <- breakpoints(max.ts ~ 1)
 summary(bp.max)
 
 NPH.max.sd <- rollapply(winter.schroeder%>%select(mean.max), 11, sd, fill=NA)
-plot(1967:2023, NPH.max.sd , type="l")
+plot(1972:2019, NPH.max.sd , type="l")
 
 # first, make a data frame
-plot.dat <- data.frame(year=1972:2018, sd=na.omit(NPH.max.sd))
+plot.dat <- data.frame(year=1972:2019, sd=na.omit(NPH.max.sd))
 #plot.dat <- data.frame(year=1969:2021, sd=na.omit(NPH.max.sd))
 
 # fit the model
@@ -463,9 +455,9 @@ col<-pnw_palette("Sunset2",3,type="discrete")
 col3<-pnw_palette("Sunset2",8,type="continuous")
 
 col<-pnw_palette("Sunset2",3,type="discrete")
-climate_dat <-readRDS(here('data/physical/climate_dat_upwelling.rds'))
-climate_dat_cop <-readRDS(here('data/physical/climate_dat_cop.rds'))
-bakunsites <- read.csv(here('data/physical/Bakun/MapLocations2.csv'))%>%
+climate_dat <-readRDS('data/physical/climate_dat_upwelling.rds')
+climate_dat_cop <-readRDS('data/physical/climate_dat_cop.rds')
+bakunsites <- read.csv('data/physical/Bakun/MapLocations2.csv')%>%
   mutate(longitude=longitude)
 sites <- st_as_sf(data.frame(bakunsites[,1:2]), coords = c("longitude","latitude"), crs = 4326, 
                   agr = "constant")
@@ -519,6 +511,10 @@ map<-ggplot() +
 
 map 
 
+
+
+
+
 #### SLP Plots ####
 
 
@@ -548,9 +544,7 @@ buffer<- data.frame(st_coordinates(buff2))%>% #creating the buffer polygon
  # filter(L1==1,L2==1,L3==1020)%>%
  # select(X,Y)%>%
   mutate(x=X,y=Y)
-unique(coast$L1)
-unique(coast$L2)
-unique(coast$L3)
+
 coast2<-st_coordinates(st_as_sf(buffer(vect(world3),width=1)))
 coast<- data.frame(coast2)%>%
   filter(Y>30&Y<55)%>%
@@ -561,7 +555,9 @@ coast<- data.frame(coast2)%>%
  # select(X,Y)%>%
   purrr::map_df(rev)%>%
   mutate(x=X,y=Y)
-
+unique(coast$L1)
+unique(coast$L2)
+unique(coast$L3)
 #no 31
 buffer<-rbind(buffer[8:228,],coast[1:2000,],buffer[8,])%>%
   filter(y>31&y<48.5)
