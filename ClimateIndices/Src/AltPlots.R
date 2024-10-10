@@ -204,7 +204,7 @@ ggarrange(density_phe,density_bio,density_bio2, ncol = 3, labels = c("A", "B", "
 dev.off()
 
 col<-pnw_palette("Sunset2",3,type="discrete")
-#### Posterior Means ####
+#### Posterior Means Spring ####
 dodge<-0.6
 mean_beta<-Violin_Data%>%group_by(region,period,survey, Season,Index,lag)%>%
   summarise(median_beta=median(beta),sd_beta_80=ci(beta,ci = 0.95, method = "HDI"),
@@ -398,6 +398,139 @@ dist_bio2<-ggplot(mean_beta%>%filter(survey=="CALCOFI"|survey=="RREAS"|survey=="
 pdf("Output/Distribution.pdf", 11,6) 
 ggarrange(dist_phe,dist_bio,dist_bio2, ncol = 3, labels = c("A", "B", "C"), 
           widths=c(4,2,2))
+dev.off()
+
+
+#### Posterior Means Winter ####
+
+dist_phe<-ggplot(mean_beta%>%filter(survey=="TUMI"|survey=="STI"|survey=="LUSI")%>%
+                   filter(Season=="Winter")%>%filter(lag==0), aes(x = median_beta, y=Index,col = as.factor(period))) +
+  theme_bw() +
+  geom_errorbar(aes(xmin=sd_beta_80$CI_low, xmax=sd_beta_80$CI_high),width = 0, lwd=0.3, position =ggstance::position_dodgev(height=dodge))+
+  geom_errorbar(aes(xmin=sd_beta_50$CI_low, xmax=sd_beta_50$CI_high),width = 0, lwd=0.8, position =ggstance::position_dodgev(height=dodge))+
+  geom_point(aes(col = as.factor(period)), cex=1.75, position = ggstance::position_dodgev(height=dodge))+
+  ggh4x::facet_grid2(region~survey) +
+  ylab("Climate Index") +
+  guides(col=guide_legend(title="Period"))+
+  scale_colour_manual(values = c(col[1],col[2], col[3]), name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022')) +
+  geom_vline(xintercept = 0, lty = 2) +
+  xlab("Slope") +
+  theme(legend.position="bottom") 
+dist_phe
+dist_bio<-ggplot(mean_beta%>%
+                   filter(survey=="CALCOFI"&period!=4)%>%
+                   bind_rows(mean_beta%>%filter(survey=="RREAS"&period!=1&period!=4|survey=="N. Copepod"&period!=1&period!=4|survey=="S. Copepod"&period!=1&period!=4))%>%
+                   filter(Season=="Winter"&lag==0),
+                 aes(x =median_beta,y=Index, col=as.factor(period))) +
+  theme_bw()+
+  geom_errorbar(aes(xmin=sd_beta_80$CI_low, xmax=sd_beta_80$CI_high),width = 0, lwd=0.3,position = ggstance::position_dodgev(height=dodge))+
+  geom_errorbar(aes(xmin=sd_beta_50$CI_low, xmax=sd_beta_50$CI_high),width = 0, lwd=0.8,position = ggstance::position_dodgev(height=dodge))+
+  geom_point(aes(col = as.factor(period)), cex=1.75,position = ggstance::position_dodgev(height=dodge))+
+  facet_wrap(~survey,ncol=1) +
+  
+  ylab("") +
+  scale_colour_manual(values = col)+
+  geom_vline(xintercept = 0, lty = 2) +
+  xlab("Slope") +
+  theme(legend.position="none") 
+dist_bio
+
+
+pdf("Output/DistributionWinter.pdf", 8,5) 
+ggarrange(dist_phe,dist_bio, ncol = 2, labels = c("A", "B"), 
+          widths=c(4,2), heights=c(2,2))
+dev.off()
+
+
+#### Posterior Means Intercepts Winter ####
+
+dist_phe<-ggplot(mean_alpha%>%filter(survey=="TUMI"|survey=="STI"|survey=="LUSI")%>%
+                   filter(Season=="Winter")%>%filter(lag==0), aes(x = median_alpha, y=Index,col = as.factor(period))) +
+  theme_bw() +
+  geom_errorbar(aes(xmin=sd_alpha_80$CI_low, xmax=sd_alpha_80$CI_high),width = 0, lwd=0.3, position =ggstance::position_dodgev(height=dodge))+
+  geom_errorbar(aes(xmin=sd_alpha_50$CI_low, xmax=sd_alpha_50$CI_high),width = 0, lwd=0.8, position =ggstance::position_dodgev(height=dodge))+
+  geom_point(aes(col = as.factor(period)), cex=1.75, position = ggstance::position_dodgev(height=dodge))+
+  ggh4x::facet_grid2(region~survey) +
+  ylab("Climate Index") +
+  guides(col=guide_legend(title="Period"))+
+  scale_colour_manual(values = c(col[1],col[2], col[3]), name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022')) +
+  geom_vline(xintercept = 0, lty = 2) +
+  xlab("Intercept") +
+  theme(legend.position="bottom") 
+dist_phe
+dist_bio<-ggplot(mean_alpha%>%
+                   filter(survey=="CALCOFI"&period!=4)%>%
+                   bind_rows(mean_alpha%>%filter(survey=="RREAS"&period!=1&period!=4|survey=="N. Copepod"&period!=1&period!=4|survey=="S. Copepod"&period!=1&period!=4))%>%
+                   filter(Season=="Winter"&lag==0),
+                 aes(x =median_alpha,y=Index, col=as.factor(period))) +
+  theme_bw()+
+  geom_errorbar(aes(xmin=sd_alpha_80$CI_low, xmax=sd_alpha_80$CI_high),width = 0, lwd=0.3,position = ggstance::position_dodgev(height=dodge))+
+  geom_errorbar(aes(xmin=sd_alpha_50$CI_low, xmax=sd_alpha_50$CI_high),width = 0, lwd=0.8,position = ggstance::position_dodgev(height=dodge))+
+  geom_point(aes(col = as.factor(period)), cex=1.75,position = ggstance::position_dodgev(height=dodge))+
+  facet_wrap(~survey,ncol=1) +
+  
+  ylab("") +
+  scale_colour_manual(values = col)+
+  geom_vline(xintercept = 0, lty = 2) +
+  xlab("Intercept") +
+  theme(legend.position="none") 
+dist_bio
+ 
+
+pdf("Output/DistributionInterceptWinter.pdf", 8,5) 
+ggarrange(dist_phe,dist_bio,dist_bio2, ncol = 2, labels = c("A", "B"), 
+          widths=c(4,2), heights=c(2,2))
+dev.off()
+
+#### Posterior Means Lag ####
+
+dist_bio<-ggplot(mean_beta%>%
+                   filter(survey=="CALCOFI"&period!=4)%>%
+                   bind_rows(mean_beta%>%filter(survey=="RREAS"&period!=1&period!=4|survey=="N. Copepod"&period!=1&period!=4|survey=="S. Copepod"&period!=1&period!=4))%>%
+                   filter(Season=="Spring"&lag==1),
+                 aes(x =median_beta,y=Index, col=as.factor(period))) +
+  theme_bw()+
+  geom_errorbar(aes(xmin=sd_beta_80$CI_low, xmax=sd_beta_80$CI_high),width = 0, lwd=0.3,position = ggstance::position_dodgev(height=dodge))+
+  geom_errorbar(aes(xmin=sd_beta_50$CI_low, xmax=sd_beta_50$CI_high),width = 0, lwd=0.8,position = ggstance::position_dodgev(height=dodge))+
+  geom_point(aes(col = as.factor(period)), cex=1.75,position = ggstance::position_dodgev(height=dodge))+
+  facet_wrap(~survey,ncol=1) +
+  
+  ylab("") +
+  scale_colour_manual(values = c(col[1],col[2], col[3]), name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022')) +
+  geom_vline(xintercept = 0, lty = 2) +
+  xlab("Intercept") +
+  theme(legend.position="bottom") 
+dist_bio
+
+
+pdf("Output/DistributionLag.pdf", 6,5) 
+ggarrange(dist_bio, ncol = 1)
+dev.off()
+
+
+#### Posterior Means Intercepts ####
+
+dist_bio<-ggplot(mean_alpha%>%
+                   filter(survey=="CALCOFI"&period!=4)%>%
+                   bind_rows(mean_alpha%>%filter(survey=="RREAS"&period!=1&period!=4|survey=="N. Copepod"&period!=1&period!=4|survey=="S. Copepod"&period!=1&period!=4))%>%
+                   filter(Season=="Spring"&lag==1),
+                 aes(x =median_alpha,y=Index, col=as.factor(period))) +
+  theme_bw()+
+  geom_errorbar(aes(xmin=sd_alpha_80$CI_low, xmax=sd_alpha_80$CI_high),width = 0, lwd=0.3,position = ggstance::position_dodgev(height=dodge))+
+  geom_errorbar(aes(xmin=sd_alpha_50$CI_low, xmax=sd_alpha_50$CI_high),width = 0, lwd=0.8,position = ggstance::position_dodgev(height=dodge))+
+  geom_point(aes(col = as.factor(period)), cex=1.75,position = ggstance::position_dodgev(height=dodge))+
+  facet_wrap(~survey,ncol=1) +
+  
+  ylab("") +
+  scale_colour_manual(values = c(col[1],col[2], col[3]), name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022')) +
+  geom_vline(xintercept = 0, lty = 2) +
+  xlab("Intercept") +
+  theme(legend.position="bottom") 
+dist_bio
+
+
+pdf("Output/DistributionLagIntercept.pdf", 6,5) 
+ggarrange(dist_bio, ncol = 1)
 dev.off()
 
 
