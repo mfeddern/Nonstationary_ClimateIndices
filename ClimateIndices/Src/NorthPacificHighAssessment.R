@@ -335,9 +335,9 @@ plot.dat2 <-spring.schroeder%>%
   left_join(plot.dat%>%dplyr::select(Year, mean, mean.max))
 plot.dat2[is.na(plot.dat2)] <- 1.01
 plot.dat2 <-plot.dat2%>%left_join(plot.dat%>%dplyr::select(Year,year))
-max_first  <- max(plot.dat2$mean.max)   # Specify max of first y axis
+max_first  <- 2.4#max(plot.dat2$mean.max)   # Specify max of first y axis
 max_second <- max(plot.dat2$mean.max.full) # Specify max of second y axis
-min_first  <- min(plot.dat2$mean.max)   # Specify min of first y axis
+min_first  <- 0.5#min(plot.dat2$mean.max)   # Specify min of first y axis
 min_second <- min(plot.dat2$mean.max.full) # Specify min of second y axis
 
 # scale and shift variables calculated based on desired mins and maxes
@@ -356,6 +356,8 @@ inv_scale_function <- function(x, scale, shift){
 
 summary(lm(mean.max.full~Year, data = plot.dat2))
 i.plot<-ggplot(data=plot.dat2,aes(x=Year,y=mean.max))+
+  geom_vline(xintercept=2012.5, lty=2, size=0.3)+
+  geom_vline(xintercept=1988.5, lty=2, size=0.3)+
  # geom_smooth(aes(x=Year, y=inv_scale_function(mean.max.full, scale, shift)), 
  #             method='lm',col='gray', alpha=.5, se=F) +
   geom_line(size=0.2,aes(x=year))+
@@ -366,8 +368,8 @@ i.plot<-ggplot(data=plot.dat2,aes(x=Year,y=mean.max))+
         axis.title.y = element_text(size=7)) +
   scale_y_continuous(limits = c(min_first, max_first), sec.axis = sec_axis(~scale_function(., scale, shift), name='North Pacific High \n Intensity (hPa)')) +
   ylab('Standard deviation \n (hPa)')+
-  ylim(c(0.5,2.4))+
   theme_bw()+
+  
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 i.plot
