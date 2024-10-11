@@ -196,7 +196,7 @@ j.plot <-ggplot(data=spring.schroeder,aes(y=mean.max,x=mean.area, label=Year,gro
              point.padding = 0.4,
              # angle = 45,
               nudge_y = c(0.5,0.1,-0.2),
-             nudge_x = c(0.3,0.3,0.4),
+             nudge_x = c(0.3,0.5,0.5),
               show.legend = FALSE) +
    theme( panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),legend.position = c(0.15, 0.7), legend.key.size = unit(4, "mm"),legend.text = element_text(size = 10))
