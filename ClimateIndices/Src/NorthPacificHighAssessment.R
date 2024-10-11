@@ -475,7 +475,7 @@ col3<-pnw_palette("Sunset2",8,type="continuous")
 col<-pnw_palette("Sunset2",3,type="discrete")
 climate_dat <-readRDS('data/physical/climate_dat_upwelling.rds')
 climate_dat_cop <-readRDS('data/physical/climate_dat_cop.rds')
-bakunsites <- read.csv('data/physical/Bakun/MapLocations2.csv')%>%
+bakunsites <- read.csv('data/physical/Bakun/MapLocations3.csv')%>%
   mutate(longitude=longitude)
 sites <- st_as_sf(data.frame(bakunsites[,1:2]), coords = c("longitude","latitude"), crs = 4326, 
                   agr = "constant")
@@ -483,7 +483,7 @@ sites <- st_as_sf(data.frame(bakunsites[,1:2]), coords = c("longitude","latitude
 #### Making the Map #####
 world <- st_as_sf(map('world', plot=F, fill=T)) #base layer for land masses
 
-map<-ggplot() +
+map_og<-ggplot() +
   geom_polygon(aes(x=c(-105, -113, -127,-105,-105),
                    y=c(22.1, 22.1,34.4486,34.4486,20)),
                fill='white', col='black',alpha=0.6)+
@@ -516,6 +516,7 @@ map<-ggplot() +
   annotate(geom = "text", x = c(-114,-114,-114,-114,-114), y = c(48,46.5,45, 44,43), 
            label = str_wrap(c("Upwelling Data","CC Regions", "Newport Line","CalCOFI", "RREAS"), width = 22),
            color = "grey22", size =3.5) +
+  
   annotate(geom = "text", x = c(-120.5,-117), y = c(41,35), 
            label = str_wrap(c("Cape Mendocino","Point Conception"), width = 20),
            fontface = "italic", color = "grey22", size = 3) +
@@ -523,6 +524,53 @@ map<-ggplot() +
            fill = 'white', col='black',size = 0.8, lwd=0.5) +
   annotate("line", x= c(-124.1, -124.65), y = c(44.652, 44.652),col=col2[1],size = 0.8, lwd=1) +
   annotate("line", x= c(-120.5, -119.5), y = c(45, 45),col=col2[1],size = 0.8, lwd=1) +
+  
+  theme(panel.background = element_rect(fill = "lightsteelblue2"),
+        panel.border = element_rect(fill = NA),panel.grid.major = element_line(colour = "transparent"))
+
+
+
+
+
+map<-ggplot() +
+  geom_polygon(aes(x=c(-105, -113, -127,-105,-105),
+                   y=c(22.1, 22.1,34.4486,34.4486,20)),
+               fill='white', col='black',alpha=0.6)+
+  geom_polygon(aes(x=c(-110, -127,-130,-110,-110), 
+                  # y=c(34.4486,34.4486,40.4401,40.4401,34.4486)),
+               y=c(34.4486,34.4486,43,43,34.4486)),
+
+               fill='white', col='black',alpha=0.6)+
+  geom_polygon(aes(x=c(-110, -130,-130,-110,-110), 
+                  # y=c(40.4401,40.4401,49.5,49.5,40.4401)),
+               y=c(43,43,49.5,49.5,43)),
+               fill='white', col='black',alpha=0.6)+
+  geom_sf(data = world)+
+  annotate("rect", xmin= -121.5, xmax = -109, ymin = 43, ymax = 48.8, 
+           fill = 'white', col='black',size = 0.8, lwd=0.2) +
+ geom_sf(fill='grey95') +
+  geom_sf(data = sites, size = c(rep(2,68+35+12), rep(3,2)), 
+          shape = c(rep(24,68), rep(21,35),rep(23,12),rep(22,2)), 
+          col = c(rep('black',68+35+14)), 
+          fill = c(rep(col3[3],68), rep(col3[7],35),rep(col3[5],12),rep(col3[8],2))) +
+  coord_sf(xlim = c(-132, -108), ylim = c(26, 50), expand = FALSE)+
+  ylab(" ")+
+  xlab(" ")+
+  annotation_scale()+
+  annotation_north_arrow(which_north = "true",pad_x = unit(0.25, "in"), 
+                         pad_y = unit(0.25, "in"))+
+  annotate(geom = "text", x = c(-127.5,-118.5,-129), y = c(39,28,46.5), 
+           label = str_wrap(c("Central", "Southern","Northern"), width = 20),
+           fontface = "italic", color = "grey22", size = 3.75, angle=c('285', '311','270')) +
+  annotate(geom = "text", x = c(-114,-114,-114,-114), y = c(48,46.5,45, 44), 
+           label = str_wrap(c("Upwelling Data","Newport Line","CalCOFI", "RREAS"), width = 22),
+           color = "grey22", size =3.5) +
+  
+  annotate(geom = "text", x = c(-120.5,-117), y = c(41,35), 
+           label = str_wrap(c("Cape Mendocino","Point Conception"), width = 20),
+           fontface = "italic", color = "grey22", size = 3) +
+  annotate("line", x= c(-124.1, -124.65), y = c(44.652, 44.652),col=col2[1],size = 0.8, lwd=1) +
+  annotate("line", x= c(-120.5, -119.5), y = c(46.5, 46.5),col=col2[1],size = 0.8, lwd=1) +
   
   theme(panel.background = element_rect(fill = "lightsteelblue2"),
         panel.border = element_rect(fill = NA),panel.grid.major = element_line(colour = "transparent"))
