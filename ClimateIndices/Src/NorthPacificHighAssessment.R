@@ -1,6 +1,8 @@
 library(ggrepel)
 library(strucchange)
 library(ncdf4)
+library(tidyverse)
+library(ggpp)
 library(zoo)
 library(maps)
 library(mapdata)
@@ -188,7 +190,16 @@ j.plot <-ggplot(data=spring.schroeder,aes(y=mean.max,x=mean.area, label=Year,gro
   geom_hline(yintercept=mean(spring.schroeder$mean.max),lty=2, col='grey')+
   geom_vline(xintercept=mean(spring.schroeder$mean.area), lty=2, col='grey')+
   xlab(expression("North Pacific High Area "~(10^6 ~km^2)))+
-  theme( panel.grid.major = element_blank(),
+  geom_text_s(data=spring.schroeder%>%filter(Year>2020),
+             # aes(colour = factor(cyl)),
+              colour.target = "segment",
+             arrow = arrow(length = grid::unit(1.5, "mm")),
+             point.padding = 0.4,
+             # angle = 45,
+              nudge_y = c(0.5,0.1,-0.2),
+             nudge_x = c(0.3,0.3,0.4),
+              show.legend = FALSE) +
+   theme( panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),legend.position = c(0.15, 0.7), legend.key.size = unit(4, "mm"),legend.text = element_text(size = 10))
 j.plot
 
@@ -253,25 +264,25 @@ plot(spring.schroeder$Year, spring.schroeder$mean.max, type="l")
 plot(spring.schroeder$Year, spring.schroeder$mean.area.anom, type="l")
 
 #making a TS for break point analysis Y
-y.ts <- ts(data=spring.schroeder%>%select(mean.y), 1967, 2023, frequency=1)
+y.ts <- ts(data=spring.schroeder%>%dplyr::select(mean.y), 1967, 2023, frequency=1)
 # fit breakpoint model
 bp.y <- breakpoints(y.ts ~ 1)
 summary(bp.y) 
 
 #making a TS for break point analysis X
-x.ts <- ts(data=spring.schroeder%>%select(mean.x), 1967, 2023, frequency=1)
+x.ts <- ts(data=spring.schroeder%>%dplyr::select(mean.x), 1967, 2023, frequency=1)
 # fit breakpoint model
 bp.x <- breakpoints(x.ts ~ 1)
 summary(bp.x) 
 
 #making a TS for break point analysis Area
-area.ts <- ts(data=spring.schroeder%>%select(mean.area.anom), 1967, 2023, frequency=1)
+area.ts <- ts(data=spring.schroeder%>%dplyr::select(mean.area.anom), 1967, 2023, frequency=1)
 # fit breakpoint model
 bp.area <- breakpoints(area.ts ~ 1)
 summary(bp.area) 
 
 #making a TS for break point analysis Intensity
-max.ts <- ts(data=spring.schroeder%>%select(mean.max), 1967, 2023, frequency=1)
+max.ts <- ts(data=spring.schroeder%>%dplyr::select(mean.max), 1967, 2023, frequency=1)
 # fit breakpoint model
 bp.max <- breakpoints(max.ts ~ 1)
 summary(bp.max) 
@@ -320,11 +331,11 @@ plot.dat$mean <- pred$fit
 
 plot.dat<-plot.dat%>%mutate(Year=year)
 plot.dat2 <-spring.schroeder%>%
-  select(Year, mean.x, mean.y,mean.max, mean.area,era,era.lab)%>%
+  dplyr::select(Year, mean.x, mean.y,mean.max, mean.area,era,era.lab)%>%
   rename(mean.max.full=mean.max)%>%
-  left_join(plot.dat%>%select(Year, mean, mean.max))
+  left_join(plot.dat%>%dplyr::select(Year, mean, mean.max))
 plot.dat2[is.na(plot.dat2)] <- 1.01
-plot.dat2 <-plot.dat2%>%left_join(plot.dat%>%select(Year,year))
+plot.dat2 <-plot.dat2%>%left_join(plot.dat%>%dplyr::select(Year,year))
 max_first  <- max(plot.dat2$mean.max)   # Specify max of first y axis
 max_second <- max(plot.dat2$mean.max.full) # Specify max of second y axis
 min_first  <- min(plot.dat2$mean.max)   # Specify min of first y axis
@@ -353,7 +364,9 @@ i.plot<-ggplot(data=plot.dat2,aes(x=Year,y=mean.max))+
         axis.title.y = element_text(size=7)) +
   scale_y_continuous(limits = c(min_first, max_first), sec.axis = sec_axis(~scale_function(., scale, shift), name='North Pacific High \n Intensity (hPa)')) +
   ylab('Standard deviation \n (hPa)')+
-  theme_bw() 
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
 i.plot
 
 c.plot <- ggplot(plot.dat, aes(Year, mean.max)) +
@@ -416,12 +429,12 @@ e.plot
 
 
 #TS for winter data
-max.ts <- ts(data=winter.schroeder%>%select(mean.max), 1967, 2023, frequency=1)
+max.ts <- ts(data=winter.schroeder%>%dplyr::select(mean.max), 1967, 2023, frequency=1)
 # fit breakpoint model
 bp.max <- breakpoints(max.ts ~ 1)
 summary(bp.max)
 
-NPH.max.sd <- rollapply(winter.schroeder%>%select(mean.max), 11, sd, fill=NA)
+NPH.max.sd <- rollapply(winter.schroeder%>%dplyr::select(mean.max), 11, sd, fill=NA)
 plot(1972:2019, NPH.max.sd , type="l")
 
 # first, make a data frame
