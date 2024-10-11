@@ -190,9 +190,8 @@ j.plot <-ggplot(data=spring.schroeder,aes(y=mean.max,x=mean.area, label=Year,gro
   geom_hline(yintercept=mean(spring.schroeder$mean.max),lty=2, col='grey')+
   geom_vline(xintercept=mean(spring.schroeder$mean.area), lty=2, col='grey')+
   xlab(expression("North Pacific High Area "~(10^6 ~km^2)))+
-  geom_text_s(data=spring.schroeder%>%filter(Year>2020),
-             # aes(colour = factor(cyl)),
-              colour.target = "segment",
+  geom_text_s(data=spring.schroeder%>%filter(Year>2020),colour='black',
+              #colour.target = "segment",
              arrow = arrow(length = grid::unit(1.5, "mm")),
              point.padding = 0.4,
              # angle = 45,
@@ -637,7 +636,7 @@ pdf("Output/Map.pdf", 4,5)
 map
 dev.off()
 pdf("Output/Fig SLP and NPH.pdf", 11,6.5) 
-ggarrange(ggarrange(a.plot,j.plot,c.plot, nrow = 3, labels = c("A", "B", "C")),
+ggarrange(ggarrange(a.plot,j.plot,i.plot, nrow = 3, labels = c("A", "B", "C")),
           SLP_coast2,
                     ncol=2,labels = c("","D"))
 dev.off()
