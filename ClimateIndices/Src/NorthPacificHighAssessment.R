@@ -354,15 +354,19 @@ inv_scale_function <- function(x, scale, shift){
   return ((x + shift)/scale)
 }
 
-
+summary(lm(mean.max.full~Year, data = plot.dat2))
 i.plot<-ggplot(data=plot.dat2,aes(x=Year,y=mean.max))+
+ # geom_smooth(aes(x=Year, y=inv_scale_function(mean.max.full, scale, shift)), 
+ #             method='lm',col='gray', alpha=.5, se=F) +
   geom_line(size=0.2,aes(x=year))+
   geom_point(aes(x=Year, y=inv_scale_function(mean.max.full, scale, shift)), col='gray', alpha=.5) +
+  
   geom_line(aes(x=year, y=mean), color=cb[6], size=0.6) +
   theme(axis.title.x = element_blank(), plot.title = element_text(size=8,hjust = 0.5), axis.text = element_text(size=7),
         axis.title.y = element_text(size=7)) +
   scale_y_continuous(limits = c(min_first, max_first), sec.axis = sec_axis(~scale_function(., scale, shift), name='North Pacific High \n Intensity (hPa)')) +
   ylab('Standard deviation \n (hPa)')+
+  ylim(c(0.5,2.4))+
   theme_bw()+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
