@@ -349,8 +349,9 @@ overlap%>%filter(Survey=="RREAS"&Index=="TUMI")
 
 unique(overlap$Survey)
 mean_alpha<-Violin_Data%>%group_by(region,period,survey, Season,Index,lag)%>%
-  summarise(median_beta=median(beta),sd_beta_80=ci(beta,ci = 0.8, method = "HDI"),
-            sd_beta_50=ci(beta,ci = 0.5, method = "HDI"))
+  summarise(median_alpha=median(alpha),sd_alpha_80=ci(alpha,ci = 0.8, method = "HDI"),
+            sd_alpha_50=ci(alpha,ci = 0.5, method = "HDI"))
+
 dist_phe<-ggplot(mean_beta%>%filter(survey=="TUMI"|survey=="STI"|survey=="LUSI")%>%
                    filter(Season=="Spring")%>%filter(period!=1&lag==0), aes(x = median_beta, y=Index, col = as.factor(period))) +
   theme_bw() +

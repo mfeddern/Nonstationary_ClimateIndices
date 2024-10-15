@@ -55,7 +55,7 @@ bakun <- bakundat%>%
   add_column("Day"=as.numeric(format(as.Date(bakundat$time),"%d")))%>%
   add_column("YearDay"=as.numeric(yday(format(as.Date(bakundat$time)))))
 
-#selecting stations and assigning regions
+#dplyr::dplyr::selecting stations and assigning regions
 bakun_region <- bakun%>%
   filter(station_id=='36N'|station_id=='39N'|station_id=='42N')%>%
   mutate(region="Central CC")%>%
@@ -69,7 +69,7 @@ bakun_region <- bakun%>%
               filter(station_id=='51N'|station_id=='54N'|station_id=='57N'|station_id=='60N')%>%
               mutate(region="GoA"))
 
-#selecting months to assign a season and adding lag for nov/dec for winter
+#dplyr::dplyr::selecting months to assign a season and adding lag for nov/dec for winter
 bakun_season <- bakun_region%>%
   filter(Month==12|Month==11|Month==1|Month==2|Month==3)%>%
   mutate(season="Winter")%>%
@@ -90,7 +90,7 @@ bakun_summ_annual <- bakun_season%>%
   mutate(mean = mean(annual_mean), sd=sd(annual_mean))%>%
   ungroup()%>%
   mutate(stand_bakun_annual = (annual_mean-mean)/sd)%>%
-  select(Year_lag, region,stand_bakun_annual)
+ dplyr::select(Year_lag, region,stand_bakun_annual)
 
 #creating a seasonal standardization
 bakun_summ_seasonal <- bakun_season%>%
@@ -101,7 +101,7 @@ bakun_summ_seasonal <- bakun_season%>%
   mutate(mean = mean(season_mean), sd=sd(season_mean))%>%
   ungroup()%>%
   mutate(stand_bakun_seasonally = (season_mean-mean)/sd)%>%
-  select(Year_lag, season, region,stand_bakun_seasonally)
+  dplyr::select(Year_lag, season, region,stand_bakun_seasonally)
 
 #creating a monthly standardization (note this uses YearLag)
 bakun_summ<- bakun_season%>%
@@ -139,7 +139,7 @@ bakun_time <-bakun_summ%>%
                                                                         13)))))))))))))
 
 bakun_monthly <- bakun_time%>%
-  select(Month, region, Year_lag, monthly_mean, stand_bakun_monthly)
+ dplyr::select(Month, region, Year_lag, monthly_mean, stand_bakun_monthly)
 bakun_time%>%filter(Year_lag==2023&season=='Spring')
 
 
@@ -217,9 +217,9 @@ TUMIdat <- TUMIdat%>%
   add_column('Month'=as.numeric(format(as.Date(TUMIdat$time),"%m")))%>%
   add_column("Day"=as.numeric(format(as.Date(TUMIdat$time),"%d")))
 
-corrplot.mixed(cor(pivot_wider(TUMIdat%>%select(station_id,tumi, Year),names_from = station_id, values_from = tumi)%>%
-               select(!Year)),
-         order="alphabet", title="TUMI", mar=c(0,0,3,0))
+Tumi.corr <-corrplot.mixed(cor(pivot_wider(TUMIdat%>%dplyr::select(station_id,tumi, Year),names_from = station_id, values_from = tumi)%>%
+               dplyr::select(!Year)),
+         order="alphabet")
 
 STIdat <-read.csv(here('data/physical/Upwelling_Phenology/cciea_OC_STI_48N.csv'))%>%
   mutate(station_id='48N')%>%
@@ -235,9 +235,10 @@ STIdat <- STIdat%>%
   add_column("Day"=as.numeric(format(as.Date(STIdat$time),"%d")))
 STIdat%>%filter(station_id=='48N')
 
-corrplot.mixed(cor(na.omit(scale(pivot_wider(STIdat%>%select(station_id,sti, Year),names_from = station_id, values_from = sti)%>%
-                     select(!Year), center=TRUE, scale=TRUE))),
-               order="alphabet", title="STI", mar=c(0,0,3,0))
+Sti.corr<-corrplot.mixed(cor(na.omit(scale(pivot_wider(STIdat%>%
+                dplyr::select(station_id,sti, Year),names_from = station_id, values_from = sti)%>%
+                   dplyr::select(!Year), center=TRUE, scale=TRUE))),
+               order="alphabet", title="STI")
 
 
 
@@ -254,9 +255,33 @@ LUSIdat <- LUSIdat%>%
   add_column('Month'=as.numeric(format(as.Date(LUSIdat$time),"%m")))%>%
   add_column("Day"=as.numeric(format(as.Date(LUSIdat$time),"%d")))
 
-corrplot.mixed(cor(pivot_wider(LUSIdat%>%select(station_id,lusi, Year),names_from = station_id, values_from = lusi)%>%
-               select(!Year)),
-               order="alphabet", title="LUSI", mar=c(0,0,3,0))
+
+
+
+
+
+pdf("Output/Correlations.pdf", 3,7)
+par(mfrow=c(3,1))
+corrplot.mixed(cor(pivot_wider(TUMIdat%>%dplyr::select(station_id,tumi, Year),names_from = station_id, values_from = tumi)%>%
+                     dplyr::select(!Year)),
+               order="alphabet")
+
+corrplot.mixed(cor(na.omit(scale(pivot_wider(STIdat%>%
+                                               dplyr::select(station_id,sti, Year),names_from = station_id, values_from = sti)%>%
+                                   dplyr::select(!Year), center=TRUE, scale=TRUE))),
+               order="alphabet")
+
+ corrplot.mixed(cor(pivot_wider(LUSIdat%>%dplyr::select(station_id,lusi, Year),names_from = station_id, values_from = lusi)%>%
+                                                  dplyr::select(!Year)),
+                                            order="alphabet")
+         
+dev.off()
+
+
+
+
+
+
 
 phendat <- LUSIdat%>%left_join(STIdat)%>%
   left_join(TUMIdat)
@@ -289,7 +314,7 @@ phen_stand <- phen_region%>%
   mutate(stand_lusi = (lusi_mean-lusi_annual_mean)/lusi_annual_sd,
          stand_sti = (sti_mean-sti_annual_mean)/sti_annual_sd,
         stand_tumi = (tumi_mean-tumi_annual_mean)/tumi_annual_sd)%>%
-  select(Year, region,stand_tumi,stand_sti,stand_lusi)%>%
+  dplyr::dplyr::select(Year, region,stand_tumi,stand_sti,stand_lusi)%>%
   rename(Year_lag=Year)
 
 ##### PDO ##### 
@@ -484,7 +509,7 @@ climate_dat <- bakun_time%>%
 
 colnames(climate_dat)
 climate_dat <- climate_dat%>%
-  select(Year_lag, region, season, stand_bakun_seasonally,period,stand_tumi,           
+  dplyr::dplyr::select(Year_lag, region, season, stand_bakun_seasonally,period,stand_tumi,           
          stand_sti, stand_lusi,
          era.region, seasonal_PDO, annual_NPGO, seasonal_NPGO, annual_ONI, seasonal_ONI,
          annual_NPH, seasonal_NPH)%>%
@@ -509,7 +534,7 @@ climate_dat <- PDO_seasonal%>%
  # merge(ONI, by=c('Month', 'Year_lag'))%>%
   merge(ONI_annual, by=c('Year_lag'))%>%
   merge(ONI_seasonal, by=c('season', 'Year_lag'))%>%
-  # merge(copepod%>%select(Year_lag, period), by=c('Year_lag'))%>%
+  # merge(copepod%>%dplyr::dplyr::select(Year_lag, period), by=c('Year_lag'))%>%
   merge(dfa.trend, by=c('Year_lag'))%>%
   #left_join(NPGO, by=c('Month', 'Year_lag'))%>%
   left_join(NPGO_annual, by=c('Year_lag'))%>%
@@ -520,7 +545,7 @@ climate_dat <- PDO_seasonal%>%
 
 
 climate_dat <- climate_dat%>%
-  select(Year_lag, season,estimate, lower, upper, trend, era,
+  dplyr::dplyr::select(Year_lag, season,estimate, lower, upper, trend, era,
          annual_PDO, seasonal_PDO, annual_NPGO, seasonal_NPGO, annual_ONI, seasonal_ONI,
          annual_NPH, seasonal_NPH,NPI_stand)%>%
   distinct()
@@ -543,7 +568,7 @@ climate_dat <- PDO_seasonal%>%
   # merge(ONI, by=c('Month', 'Year_lag'))%>%
   merge(ONI_annual, by=c('Year_lag'))%>%
   merge(ONI_seasonal, by=c('season', 'Year_lag'))%>%
-  # merge(copepod%>%select(Year_lag, period), by=c('Year_lag'))%>%
+  # merge(copepod%>%dplyr::dplyr::select(Year_lag, period), by=c('Year_lag'))%>%
   #merge(copepod_annual, by=c('Year_lag'))%>%
   merge(copepod_seasonal, by=c('season', 'Year_lag'))%>%
   #left_join(NPGO, by=c('Month', 'Year_lag'))%>%
@@ -555,7 +580,7 @@ climate_dat <- PDO_seasonal%>%
 
 
 climate_dat <- climate_dat%>%
-  select(Year_lag, region, period, season,
+  dplyr::dplyr::select(Year_lag, region, period, season,
          annual_PDO, seasonal_PDO, annual_NPGO, seasonal_NPGO, annual_ONI, seasonal_ONI,
          annual_NPH, seasonal_NPH,NPI_stand, 
          seasonal_copepod_northern, seasonal_copepod_southern)%>%
@@ -588,7 +613,7 @@ climate_dat <-climate_dat%>%
   bind_rows(climate_dat%>%
               filter(Year_lag>=1979)%>%
               mutate(period2='2'))%>%
-  select(Year_lag, season, period, period2,seasonal_PDO, seasonal_NPGO, seasonal_ONI)%>%
+  dplyr::dplyr::select(Year_lag, season, period, period2,seasonal_PDO, seasonal_NPGO, seasonal_ONI)%>%
   distinct()
 
 ggplot(climate_dat, aes(x=seasonal_PDO, y=seasonal_ONI))+
