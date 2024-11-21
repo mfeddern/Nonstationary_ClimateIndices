@@ -1,1 +1,6 @@
-Code and data for: Feddern, M. L., E. J. Ward, M. A. Litzow, M. Jacox, I. D. Schroeder, W. H. Satterthwaite, C. J. Cunningham, N. A. Bond, M. J. Malick, B. J. Burke. 2024. Quantifying time-dependent climate and ecosystem relationships in the California Current Ecosystem.
+# Nonstationary_ClimateIndices
+This repository includes data, code, and model output for: Feddern, M. L., E. J. Ward, M. E. Hunsicker, M. A. Litzow, M. Jacox, I. D. Schroeder, W. H. Satterthwaite, C. J. Cunningham, N. A. Bond, M. J. Malick, B. J. Burke. 2024. Quantifying time-dependent climate and ecosystem relationships in the California Current Ecosystem.
+
+## Access information
+
+Data and code are available on Github and archived by Zenodo. All primary data are from publicly available sources. SST and SLP data from ECMWF Era5 Reanalysis were accessed through the Copernicus Climate Change Service server. Monthly climate index data were accessed through publicly available and frequently updated sources: the Pacific Decadal Oscillation and the North Pacific Gyre Oscillation indices available at NOAA National Center for Environmental Information, the Ocean Niño Index available at NOAA National Weather Service Climate Prediction Center, and the North Pacific High index available at the National Center for Atmospheric Research. All upwelling time series and time series collected through the CalCOFI, RREAS, and Newport Hydrographic Line surveys are available through the ERDDAP data server (https://coastwatch.pfeg.noaa.gov/erddap/index.html). 
