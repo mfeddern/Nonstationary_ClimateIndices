@@ -199,7 +199,7 @@ j.plot <-ggplot(data=spring.schroeder,aes(y=mean.max,x=mean.area, label=Year,gro
              nudge_x = c(0.3,0.5,0.5),
               show.legend = FALSE) +
    theme( panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),legend.position = c(0.15, 0.7), legend.key.size = unit(4, "mm"),legend.text = element_text(size = 10))
+        panel.grid.minor = element_blank(),legend.position = c(0.15, 0.7), legend.key.size = unit(3.5, "mm"),legend.text = element_text(size = 10))
 j.plot
 
 j.plotw <-ggplot(data=winter.schroeder,aes(y=mean.max,x=mean.area, label=Year_win,group=era.lab,col=era.lab))+
@@ -689,6 +689,7 @@ dev.off()
 pdf("Output/Map.pdf", 4,5) 
 map
 dev.off()
+
 pdf("Output/Fig SLP and NPH.pdf", 11,6.5) 
 ggarrange(ggarrange(a.plot,j.plot,i.plot, nrow = 3, labels = c("A", "B", "C")),
           SLP_coast2,
@@ -697,4 +698,11 @@ dev.off()
 
 pdf("Output/Fig NPH Winter.pdf", 6,6.5) 
 ggarrange(a.plotw,j.plotw,c.plotw, nrow = 3, labels = c("A", "B", "C"))
+dev.off()
+
+mapPlot<-ggarrange(map, ncol=1,labels = c("A"))
+NPHPlot<-ggarrange(a.plot,j.plot,i.plot, nrow = 3, labels = c("B", "C", "D"))
+
+pdf("Output/Fig Map and NPH.pdf", 9.75,6) 
+ggarrange(mapPlot,NPHPlot,ncol=2,widths=c(1,1.5))
 dev.off()
