@@ -314,7 +314,7 @@ phen_stand <- phen_region%>%
   mutate(stand_lusi = (lusi_mean-lusi_annual_mean)/lusi_annual_sd,
          stand_sti = (sti_mean-sti_annual_mean)/sti_annual_sd,
         stand_tumi = (tumi_mean-tumi_annual_mean)/tumi_annual_sd)%>%
-  dplyr::dplyr::select(Year, region,stand_tumi,stand_sti,stand_lusi)%>%
+  dplyr::select(Year, region,stand_tumi,stand_sti,stand_lusi)%>%
   rename(Year_lag=Year)
 
 ##### PDO ##### 
@@ -490,32 +490,32 @@ copepod_seasonal<-copepod_seasonal%>%
 
 ### Compile  with Upwelling Indices to Dataframe ####
 unique(bakun_time$region)
-climate_dat <- bakun_time%>%
+climate_dat <- bakun_time%>%rename(Year_lag=Year)%>%
   left_join(phen_stand, by=c('region', 'Year_lag'))%>%
-  merge(PDO, by=c('Month', 'Year_lag'))%>%
+  # merge(PDO, by=c('Month', 'Year_lag'))%>%
   # merge(PDO_annual, by=c('Year_lag'))%>%
-  merge(PDO_seasonal, by=c('season', 'Year_lag'))%>%
-  merge(NPH, by=c('Month', 'Year_lag'))%>%
+  merge(PDO_seasonal, by=c('Year_lag'))%>%
+  # merge(NPH, by=c('Month', 'Year_lag'))%>%
   merge(NPH_annual, by=c('Year_lag'))%>%
-  merge(NPH_seasonal, by=c('season', 'Year_lag'))%>%
-  merge(ONI, by=c('Month', 'Year_lag'))%>%
+  merge(NPH_seasonal, by=c('season','Year_lag'))%>%
+  #merge(ONI, by=c('Month', 'Year_lag'))%>%
   merge(ONI_annual, by=c('Year_lag'))%>%
-  merge(ONI_seasonal, by=c('season', 'Year_lag'))%>%
+  merge(ONI_seasonal, by=c('season','Year_lag'))%>%
 # merge(copepod_annual, by=c('Year_lag'))%>%
 #  merge(copepod_seasonal, by=c('season', 'Year_lag'))%>%
-  left_join(NPGO, by=c('Month', 'Year_lag'))%>%
+  # left_join(NPGO, by=c('Month', 'Year_lag'))%>%
   left_join(NPGO_annual, by=c('Year_lag'))%>%
-  left_join(NPGO_seasonal, by=c('season', 'Year_lag'))
+  left_join(NPGO_seasonal, by=c('season','Year_lag'))
 
 colnames(climate_dat)
 climate_dat <- climate_dat%>%
-  dplyr::dplyr::select(Year_lag, region, season, stand_bakun_seasonally,period,stand_tumi,           
+  dplyr::select(Year_lag, region, season, period,stand_tumi,           
          stand_sti, stand_lusi,
-         era.region, seasonal_PDO, annual_NPGO, seasonal_NPGO, annual_ONI, seasonal_ONI,
+          seasonal_PDO, annual_NPGO, seasonal_NPGO, annual_ONI, seasonal_ONI,
          annual_NPH, seasonal_NPH)%>%
   distinct()
 
-ggplot(climate_dat, aes(x=seasonal_PDO, y=seasonal_NPI))+
+ggplot(climate_dat, aes(x=seasonal_PDO, y=seasonal_NPH))+
   geom_point()
 
 saveRDS(climate_dat, file = here('data/physical/climate_dat_upwelling.rds'))
@@ -545,7 +545,7 @@ climate_dat <- PDO_seasonal%>%
 
 
 climate_dat <- climate_dat%>%
-  dplyr::dplyr::select(Year_lag, season,estimate, lower, upper, trend, era,
+  dplyr::select(Year_lag, season,estimate, lower, upper, trend, era,
          annual_PDO, seasonal_PDO, annual_NPGO, seasonal_NPGO, annual_ONI, seasonal_ONI,
          annual_NPH, seasonal_NPH,NPI_stand)%>%
   distinct()
@@ -580,7 +580,7 @@ climate_dat <- PDO_seasonal%>%
 
 
 climate_dat <- climate_dat%>%
-  dplyr::dplyr::select(Year_lag, region, period, season,
+  dplyr::select(Year_lag, region, period, season,
          annual_PDO, seasonal_PDO, annual_NPGO, seasonal_NPGO, annual_ONI, seasonal_ONI,
          annual_NPH, seasonal_NPH,NPI_stand, 
          seasonal_copepod_northern, seasonal_copepod_southern)%>%
