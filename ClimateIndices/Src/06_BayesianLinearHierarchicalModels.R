@@ -234,7 +234,22 @@ overlap.CALCOFI <- NA
     temp2<-rbind(ov1,ov2,ov3)
     overlap.CALCOFI <-rbind(temp2,overlap.CALCOFI)
   }
-overlap.CALCOFI<-overlap.CALCOFI%>%mutate(Survey="CALCOFI", region="SCC", season="Spring", offset=0) 
+overlap.CALCOFI.beta<-overlap.CALCOFI%>%mutate(Survey="CALCOFI", region="SCC", season="Spring", offset=0) 
+
+overlap.CALCOFI <- NA
+for(i in 1:4){
+  temp <- CALCOFI%>%filter(Index==index.names[i])%>%dplyr::select(alpha, period)
+  ov1 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(1), period2=c(2), Index=index.names[i])
+  ov2 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(alpha),temp%>%filter(period==3)%>%dplyr::select(alpha)), period1=c(1), period2=c(3), Index=index.names[i])
+  ov3 <- data.frame(ov=overlap(temp%>%filter(period==3)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(3), period2=c(2), Index=index.names[i])
+  #   ov4 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(alpha),temp%>%filter(period==3)%>%dplyr::select(alpha)), period1=c(4), period2=c(3), Index=index.names[i])
+  ##   ov5 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(alpha),temp%>%filter(period==1)%>%dplyr::select(alpha)), period1=c(4), period2=c(2), Index=index.names[i])
+  #  ov6 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(4), period2=c(1), Index=index.names[i])
+  
+  temp2<-rbind(ov1,ov2,ov3)
+  overlap.CALCOFI <-rbind(temp2,overlap.CALCOFI)
+}
+overlap.CALCOFI.alpha<-overlap.CALCOFI%>%mutate(Survey="CALCOFI", region="SCC", season="Spring", offset=0) 
 
 #running models with 1-year offset
 
@@ -294,7 +309,21 @@ overlap.CALCOFIoffset <- NA
     temp2<-rbind(ov1,ov2,ov3, ov4, ov5, ov6)
     overlap.CALCOFIoffset <-rbind(temp2,overlap.CALCOFIoffset)
   }
-overlap.CALCOFIoffset<-overlap.CALCOFIoffset%>%mutate(Survey="CALCOFI", region="SCC", season="Spring", offset=1) 
+overlap.CALCOFIoffset.beta<-overlap.CALCOFIoffset%>%mutate(Survey="CALCOFI", region="SCC", season="Spring", offset=1) 
+overlap.CALCOFIoffset <- NA
+for(i in 1:4){
+  temp <- CALCOFIoffset%>%filter(Index==index.names[i])%>%dplyr::select(alpha, period)
+  ov1 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(1), period2=c(2), Index=index.names[i])
+  ov2 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(alpha),temp%>%filter(period==3)%>%dplyr::select(alpha)), period1=c(1), period2=c(3), Index=index.names[i])
+  ov3 <- data.frame(ov=overlap(temp%>%filter(period==3)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(3), period2=c(2), Index=index.names[i])
+  ov4 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(alpha),temp%>%filter(period==3)%>%dplyr::select(alpha)), period1=c(4), period2=c(3), Index=index.names[i])
+  ov5 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(alpha),temp%>%filter(period==1)%>%dplyr::select(alpha)), period1=c(4), period2=c(2), Index=index.names[i])
+  ov6 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(4), period2=c(1), Index=index.names[i])
+  
+  temp2<-rbind(ov1,ov2,ov3, ov4, ov5, ov6)
+  overlap.CALCOFIoffset <-rbind(temp2,overlap.CALCOFIoffset)
+}
+overlap.CALCOFIoffset.alpha<-overlap.CALCOFIoffset%>%mutate(Survey="CALCOFI", region="SCC", season="Spring", offset=1) 
 
 ###### Winter #####
 
@@ -360,7 +389,22 @@ overlap.CALCOFI_W <- NA
     temp2<-rbind(ov1,ov2,ov3, ov4, ov5, ov6)
     overlap.CALCOFI_W <-rbind(temp2,overlap.CALCOFI_W)
   }
-overlap.CALCOFI_W<-overlap.CALCOFI_W%>%mutate(Survey="CALCOFI", region="SCC", season="Winter", offset=0) 
+overlap.CALCOFI_W.beta<-overlap.CALCOFI_W%>%mutate(Survey="CALCOFI", region="SCC", season="Winter", offset=0) 
+
+overlap.CALCOFI_W <- NA
+for(i in 1:4){
+  temp <- CALCOFI_W%>%filter(Index==index.names[i])%>%dplyr::select(alpha, period)
+  ov1 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(1), period2=c(2), Index=index.names[i])
+  ov2 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(alpha),temp%>%filter(period==3)%>%dplyr::select(alpha)), period1=c(1), period2=c(3), Index=index.names[i])
+  ov3 <- data.frame(ov=overlap(temp%>%filter(period==3)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(3), period2=c(2), Index=index.names[i])
+  ov4 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(alpha),temp%>%filter(period==3)%>%dplyr::select(alpha)), period1=c(4), period2=c(3), Index=index.names[i])
+  ov5 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(alpha),temp%>%filter(period==1)%>%dplyr::select(alpha)), period1=c(4), period2=c(2), Index=index.names[i])
+  ov6 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(4), period2=c(1), Index=index.names[i])
+  
+  temp2<-rbind(ov1,ov2,ov3, ov4, ov5, ov6)
+  overlap.CALCOFI_W <-rbind(temp2,overlap.CALCOFI_W)
+}
+overlap.CALCOFI_W.alpha<-overlap.CALCOFI_W%>%mutate(Survey="CALCOFI", region="SCC", season="Winter", offset=0) 
 
 
 #running models with 1-year offset
@@ -414,14 +458,14 @@ overlap.CALCOFI_Woffset <- NA
     ov1 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(beta),temp%>%filter(period==2)%>%dplyr::select(beta)), period1=c(1), period2=c(2), Index=index.names[i])
     ov2 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(beta),temp%>%filter(period==3)%>%dplyr::select(beta)), period1=c(1), period2=c(3), Index=index.names[i])
     ov3 <- data.frame(ov=overlap(temp%>%filter(period==3)%>%dplyr::select(beta),temp%>%filter(period==2)%>%dplyr::select(beta)), period1=c(3), period2=c(2), Index=index.names[i])
-    ov4 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(beta),temp%>%filter(period==3)%>%dplyr::select(beta)), period1=c(4), period2=c(3), Index=index.names[i])
-    ov5 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(beta),temp%>%filter(period==1)%>%dplyr::select(beta)), period1=c(4), period2=c(2), Index=index.names[i])
-    ov6 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(beta),temp%>%filter(period==2)%>%dplyr::select(beta)), period1=c(4), period2=c(1), Index=index.names[i])
+   # ov4 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(beta),temp%>%filter(period==3)%>%dplyr::select(beta)), period1=c(4), period2=c(3), Index=index.names[i])
+  #  ov5 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(beta),temp%>%filter(period==1)%>%dplyr::select(beta)), period1=c(4), period2=c(2), Index=index.names[i])
+  #  ov6 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(beta),temp%>%filter(period==2)%>%dplyr::select(beta)), period1=c(4), period2=c(1), Index=index.names[i])
 
     temp2<-rbind(ov1,ov2,ov3, ov4, ov5, ov6)
     overlap.CALCOFI_Woffset <-rbind(temp2,overlap.CALCOFI_Woffset)
   }
-overlap.CALCOFI_Woffset<-overlap.CALCOFI_Woffset%>%mutate(Survey="CALCOFI", region="SCC", season="Winter", offset=1)
+overlap.CALCOFI_Woffset.beta<-overlap.CALCOFI_Woffset%>%mutate(Survey="CALCOFI", region="SCC", season="Winter", offset=1)
 
 
 
@@ -483,14 +527,29 @@ for(i in 1:4){
     ov1 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(beta),temp%>%filter(period==2)%>%dplyr::select(beta)), period1=c(1), period2=c(2), Index=index.names[i])
     ov2 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(beta),temp%>%filter(period==3)%>%dplyr::select(beta)), period1=c(1), period2=c(3), Index=index.names[i])
     ov3 <- data.frame(ov=overlap(temp%>%filter(period==3)%>%dplyr::select(beta),temp%>%filter(period==2)%>%dplyr::select(beta)), period1=c(3), period2=c(2), Index=index.names[i])
-    ov4 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(beta),temp%>%filter(period==3)%>%dplyr::select(beta)), period1=c(4), period2=c(3), Index=index.names[i])
-    ov5 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(beta),temp%>%filter(period==1)%>%dplyr::select(beta)), period1=c(4), period2=c(2), Index=index.names[i])
-    ov6 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(beta),temp%>%filter(period==2)%>%dplyr::select(beta)), period1=c(4), period2=c(1), Index=index.names[i])
+    #ov4 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(beta),temp%>%filter(period==3)%>%dplyr::select(beta)), period1=c(4), period2=c(3), Index=index.names[i])
+   # ov5 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(beta),temp%>%filter(period==1)%>%dplyr::select(beta)), period1=c(4), period2=c(2), Index=index.names[i])
+   # ov6 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(beta),temp%>%filter(period==2)%>%dplyr::select(beta)), period1=c(4), period2=c(1), Index=index.names[i])
 
     temp2<-rbind(ov1,ov2,ov3, ov4, ov5, ov6)
     overlap.RREAS <-rbind(temp2,overlap.RREAS)
   }
-overlap.RREAS<-overlap.RREAS%>%mutate(Survey="RREAS", region="CCC", season="Spring", offset=0) 
+overlap.RREAS.beta<-overlap.RREAS%>%mutate(Survey="RREAS", region="CCC", season="Spring", offset=0) 
+
+
+for(i in 1:4){
+  temp <- RREAS%>%filter(Index==index.names[i])%>%dplyr::select(alpha, period)
+  ov1 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(1), period2=c(2), Index=index.names[i])
+  ov2 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(alpha),temp%>%filter(period==3)%>%dplyr::select(alpha)), period1=c(1), period2=c(3), Index=index.names[i])
+  ov3 <- data.frame(ov=overlap(temp%>%filter(period==3)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(3), period2=c(2), Index=index.names[i])
+ # ov4 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(alpha),temp%>%filter(period==3)%>%dplyr::select(alpha)), period1=c(4), period2=c(3), Index=index.names[i])
+ # ov5 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(alpha),temp%>%filter(period==1)%>%dplyr::select(alpha)), period1=c(4), period2=c(2), Index=index.names[i])
+ # ov6 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(4), period2=c(1), Index=index.names[i])
+  
+  temp2<-rbind(ov1,ov2,ov3, ov4, ov5, ov6)
+  overlap.RREAS <-rbind(temp2,overlap.RREAS)
+}
+overlap.RREAS.alpha<-overlap.RREAS%>%mutate(Survey="RREAS", region="CCC", season="Spring", offset=0) 
 
 #running models with 1-year offset
 
@@ -550,7 +609,22 @@ overlap.RREASoffset <- NA
     temp2<-rbind(ov1,ov2,ov3, ov4, ov5, ov6)
     overlap.RREASoffset <-rbind(temp2,overlap.RREASoffset)
   }
-overlap.RREASoffset<-overlap.RREASoffset%>%mutate(Survey="RREAS", region="CCC", season="Spring", offset=1) 
+overlap.RREASoffset.beta<-overlap.RREASoffset%>%mutate(Survey="RREAS", region="CCC", season="Spring", offset=1) 
+
+overlap.RREASoffset <- NA
+for(i in 1:4){
+  temp <- RREASoffset%>%filter(Index==index.names[i])%>%dplyr::select(alpha, period)
+  ov1 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(1), period2=c(2), Index=index.names[i])
+  ov2 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(alpha),temp%>%filter(period==3)%>%dplyr::select(alpha)), period1=c(1), period2=c(3), Index=index.names[i])
+  ov3 <- data.frame(ov=overlap(temp%>%filter(period==3)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(3), period2=c(2), Index=index.names[i])
+  ov4 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(alpha),temp%>%filter(period==3)%>%dplyr::select(alpha)), period1=c(4), period2=c(3), Index=index.names[i])
+  ov5 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(alpha),temp%>%filter(period==1)%>%dplyr::select(alpha)), period1=c(4), period2=c(2), Index=index.names[i])
+  ov6 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(4), period2=c(1), Index=index.names[i])
+  
+  temp2<-rbind(ov1,ov2,ov3, ov4, ov5, ov6)
+  overlap.RREASoffset <-rbind(temp2,overlap.RREASoffset)
+}
+overlap.RREASoffset.alpha<-overlap.RREASoffset%>%mutate(Survey="RREAS", region="CCC", season="Spring", offset=1) 
 
 ###### Winter #####
 
@@ -616,8 +690,22 @@ overlap.RREAS_W <- NA
     temp2<-rbind(ov1,ov2,ov3, ov4, ov5, ov6)
     overlap.RREAS_W <-rbind(temp2,overlap.RREAS_W)
   }
-overlap.RREAS_W<-overlap.RREAS_W%>%mutate(Survey="RREAS", region="CCC", season="Winter", offset=0) 
+overlap.RREAS_W.beta<-overlap.RREAS_W%>%mutate(Survey="RREAS", region="CCC", season="Winter", offset=0) 
 
+overlap.RREAS_W <- NA
+for(i in 1:4){
+  temp <- RREAS_W%>%filter(Index==index.names[i])%>%dplyr::select(alpha, period)
+  ov1 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(1), period2=c(2), Index=index.names[i])
+  ov2 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(alpha),temp%>%filter(period==3)%>%dplyr::select(alpha)), period1=c(1), period2=c(3), Index=index.names[i])
+  ov3 <- data.frame(ov=overlap(temp%>%filter(period==3)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(3), period2=c(2), Index=index.names[i])
+  ov4 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(alpha),temp%>%filter(period==3)%>%dplyr::select(alpha)), period1=c(4), period2=c(3), Index=index.names[i])
+  ov5 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(alpha),temp%>%filter(period==1)%>%dplyr::select(alpha)), period1=c(4), period2=c(2), Index=index.names[i])
+  ov6 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(4), period2=c(1), Index=index.names[i])
+  
+  temp2<-rbind(ov1,ov2,ov3, ov4, ov5, ov6)
+  overlap.RREAS_W <-rbind(temp2,overlap.RREAS_W)
+}
+overlap.RREAS_W.alpha<-overlap.RREAS_W%>%mutate(Survey="RREAS", region="CCC", season="Winter", offset=0) 
 
 #running models with 1-year offset
 
@@ -677,8 +765,22 @@ overlap.RREAS_Woffset <- NA
     temp2<-rbind(ov1,ov2,ov3, ov4, ov5, ov6)
     overlap.RREAS_Woffset <-rbind(temp2,overlap.RREAS_Woffset)
   }
-overlap.RREAS_Woffset<-overlap.RREAS_Woffset%>%mutate(Survey="RREAS", region="CCC", season="Winter", offset=1) 
+overlap.RREAS_Woffset.beta<-overlap.RREAS_Woffset%>%mutate(Survey="RREAS", region="CCC", season="Winter", offset=1) 
 
+overlap.RREAS_Woffset <- NA
+for(i in 1:4){
+  temp <- RREAS_Woffset%>%filter(Index==index.names[i])%>%dplyr::select(alpha, period)
+  ov1 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(1), period2=c(2), Index=index.names[i])
+  ov2 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(alpha),temp%>%filter(period==3)%>%dplyr::select(alpha)), period1=c(1), period2=c(3), Index=index.names[i])
+  ov3 <- data.frame(ov=overlap(temp%>%filter(period==3)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(3), period2=c(2), Index=index.names[i])
+  ov4 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(alpha),temp%>%filter(period==3)%>%dplyr::select(alpha)), period1=c(4), period2=c(3), Index=index.names[i])
+  ov5 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(alpha),temp%>%filter(period==1)%>%dplyr::select(alpha)), period1=c(4), period2=c(2), Index=index.names[i])
+  ov6 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(4), period2=c(1), Index=index.names[i])
+  
+  temp2<-rbind(ov1,ov2,ov3, ov4, ov5, ov6)
+  overlap.RREAS_Woffset <-rbind(temp2,overlap.RREAS_Woffset)
+}
+overlap.RREAS_Woffset.alpha<-overlap.RREAS_Woffset%>%mutate(Survey="RREAS", region="CCC", season="Winter", offset=1) 
 
 #### Copepod ####
 ###### Spring ####
@@ -727,7 +829,6 @@ period.names <- unique(northern$period)
 northern<- bind_rows(northern,northern_full)%>%
   mutate(region="NCC",Season="Spring", lag = 0)
 overlap.northern <- NA
-i<-1
 for(i in 1:4){
   temp <- northern%>%filter(Index==index.names[i])%>%dplyr::select(beta, period)
   ov3 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(beta),temp%>%filter(period==2)%>%dplyr::select(beta)), period1=c(1), period2=c(2), Index=index.names[i])
@@ -736,7 +837,19 @@ for(i in 1:4){
   temp2<-rbind(ov3, ov2, ov1)
   overlap.northern <-rbind(temp2,overlap.northern)
 }
-overlap.northern<-overlap.northern%>%mutate(Survey="N. Copepods", region="NCC", season="Spring", offset=0) 
+overlap.northern.beta<-overlap.northern%>%mutate(Survey="N. Copepods", region="NCC", season="Spring", offset=0) 
+
+overlap.northern <- NA
+i<-1
+for(i in 1:4){
+  temp <- northern%>%filter(Index==index.names[i])%>%dplyr::select(alpha, period)
+  ov3 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(1), period2=c(2), Index=index.names[i])
+  ov2 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(alpha),temp%>%filter(period==1)%>%dplyr::select(alpha)), period1=c(4), period2=c(1), Index=index.names[i])
+  ov1 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(4), period2=c(2), Index=index.names[i])
+  temp2<-rbind(ov3, ov2, ov1)
+  overlap.northern <-rbind(temp2,overlap.northern)
+}
+overlap.northern.alpha<-overlap.northern%>%mutate(Survey="N. Copepods", region="NCC", season="Spring", offset=0) 
 
 
 southern <-NULL
@@ -777,7 +890,18 @@ for(i in 1:4){
   temp2<-rbind(ov3, ov2, ov1)
   overlap.southern <-rbind(temp2,overlap.southern)
 }
-overlap.southern<-overlap.southern%>%mutate(Survey="S. Copepods", region="NCC", season="Spring", offset=0) 
+overlap.southern.beta<-overlap.southern%>%mutate(Survey="S. Copepods", region="NCC", season="Spring", offset=0) 
+
+overlap.southern <- NA
+for(i in 1:4){
+  temp <- southern%>%filter(Index==index.names[i])%>%dplyr::select(alpha, period)
+  ov3 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(1), period2=c(2), Index=index.names[i])
+  ov2 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(alpha),temp%>%filter(period==1)%>%dplyr::select(alpha)), period1=c(4), period2=c(1), Index=index.names[i])
+  ov1 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(4), period2=c(2), Index=index.names[i])
+  temp2<-rbind(ov3, ov2, ov1)
+  overlap.southern <-rbind(temp2,overlap.southern)
+}
+overlap.southern.alpha<-overlap.southern%>%mutate(Survey="S. Copepods", region="NCC", season="Spring", offset=0) 
 
 ###### Winter ####
 climpdo <- climate_dat_cop%>%filter(season=="Winter")%>%
@@ -825,7 +949,6 @@ period.names <- unique(northernW$period)
 northernW<- bind_rows(northernW,northernW_full)%>%
   mutate(region="NCC",Season="Winter", lag = 0)
 overlap.northernW <- NA
-i<-1
 for(i in 1:4){
   temp <- northernW%>%filter(Index==index.names[i])%>%dplyr::select(beta, period)
   ov3 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(beta),temp%>%filter(period==2)%>%dplyr::select(beta)), period1=c(1), period2=c(2), Index=index.names[i])
@@ -834,7 +957,18 @@ for(i in 1:4){
   temp2<-rbind(ov3, ov2, ov1)
   overlap.northernW <-rbind(temp2,overlap.northernW)
 }
-overlap.northernW<-overlap.northernW%>%mutate(Survey="N. Copepods", region="NCC", season="Winter", offset=0) 
+overlap.northernW.beta<-overlap.northernW%>%mutate(Survey="N. Copepods", region="NCC", season="Winter", offset=0) 
+
+overlap.northernW <- NA
+for(i in 1:4){
+  temp <- northernW%>%filter(Index==index.names[i])%>%dplyr::select(alpha, period)
+  ov3 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(1), period2=c(2), Index=index.names[i])
+  ov2 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(alpha),temp%>%filter(period==1)%>%dplyr::select(alpha)), period1=c(4), period2=c(1), Index=index.names[i])
+  ov1 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(4), period2=c(2), Index=index.names[i])
+  temp2<-rbind(ov3, ov2, ov1)
+  overlap.northernW <-rbind(temp2,overlap.northernW)
+}
+overlap.northernW.alpha<-overlap.northernW%>%mutate(Survey="N. Copepods", region="NCC", season="Winter", offset=0) 
 
 
 southernW <-NULL
@@ -874,11 +1008,19 @@ for(i in 1:4){
   temp2<-rbind(ov3, ov2, ov1)
   overlap.southernW <-rbind(temp2,overlap.southernW)
 }
-overlap.southernW<-overlap.southernW%>%mutate(Survey="S. Copepods", region="NCC", season="Winter", offset=0) 
+overlap.southernW.beta<-overlap.southernW%>%mutate(Survey="S. Copepods", region="NCC", season="Winter", offset=0) 
 
 
-
-
+overlap.southernW <- NA
+for(i in 1:4){
+  temp <- southernW%>%filter(Index==index.names[i])%>%dplyr::select(alpha, period)
+  ov3 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(1), period2=c(2), Index=index.names[i])
+  ov2 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(alpha),temp%>%filter(period==1)%>%dplyr::select(alpha)), period1=c(4), period2=c(1), Index=index.names[i])
+  ov1 <- data.frame(ov=overlap(temp%>%filter(period==4)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(4), period2=c(2), Index=index.names[i])
+  temp2<-rbind(ov3, ov2, ov1)
+  overlap.southernW <-rbind(temp2,overlap.southernW)
+}
+overlap.southernW.alpha<-overlap.southernW%>%mutate(Survey="S. Copepods", region="NCC", season="Winter", offset=0) 
 
 
 #### Upwelling Model Runs ####
@@ -1034,7 +1176,14 @@ overlap.upW
 ##### Phenology Model Runs #####
 climate_dat <-readRDS(here('data/physical/climate_dat_upwelling.rds'))%>%
   mutate(region=fct_relevel(region,c("Northern CC","Central CC","Southern CC")))
-
+tum<- climate_dat%>%filter(season=="Spring")%>%
+  dplyr::select(Year_lag, region,stand_tumi,seasonal_NPGO)%>%
+  distinct()%>%
+  pivot_longer(-c(Year_lag, region),names_to = 'indices', values_to = 'values')
+ggplot(data=tum, aes(x=Year_lag, y=values,color=indices))+
+  facet_wrap(~region)+
+  geom_point()+
+  geom_line()
  
 season <- "Spring"
 eras <- data.frame(era.region2=seq(1,9), era.region=seq(4,12))
@@ -1047,11 +1196,11 @@ region.names<-unique(climate_dat$region)
 period.names <- unique(climate_dat$period)
 
 data.phe.lm<-data%>%filter(season=="Spring")%>%
-  dplyr::select(Year_lag, season, period,region,stand_tumi,stand_lusi,stand_sti,stand_bakun_seasonally,
+  dplyr::select(Year_lag, season, period,region,stand_tumi,stand_lusi,stand_sti,#stand_bakun_seasonally,
                 seasonal_NPH,seasonal_NPGO,seasonal_PDO,seasonal_ONI)%>%
   rename(NPH=seasonal_NPH,NPGO=seasonal_NPGO,PDO=seasonal_PDO,ONI=seasonal_ONI)%>%
   distinct()%>%
-  pivot_longer(!c(Year_lag, season, period,region,stand_tumi,stand_lusi,stand_sti,stand_bakun_seasonally), 
+  pivot_longer(!c(Year_lag, season, period,region,stand_tumi,stand_lusi,stand_sti), 
                names_to = "Index_Name", values_to = "Index_Value")%>%
   pivot_longer(!c(Year_lag, season,period,region, Index_Value, Index_Name), 
                names_to = "Up_Name", values_to = "Up_Value")%>%
@@ -1072,7 +1221,7 @@ sti_dat <-ggplot(data = data.phe.lm%>%filter(Up_Name=="stand_sti"&period!=4), ae
   theme(plot.title = element_text(hjust = 0.5))+
   ggtitle("Spring")
 sti_dat
-pdf(file = "Output/Supplemental/FigureS10_STIlinearregression.pdf",   # The directory you want to save the file in
+pdf(file = "Output/FigureS10_STIlinearregression.pdf",   # The directory you want to save the file in
     width = 7, # The width of the plot in inches
     height = 5)
 sti_dat
@@ -1104,7 +1253,7 @@ STI_beta <-ggplot(STI, aes(x = beta, fill = as.factor(period))) +
   geom_vline(xintercept = 0, lty = 2) +
   labs(x = "Slope",
        y = "Posterior density")
-pdf(file = "Output/Supplemental/FigureS11_STIbeta.pdf",   # The directory you want to save the file in
+pdf(file = "Output/FigureS11_STIbeta.pdf",   # The directory you want to save the file in
     width = 7, # The width of the plot in inches
     height = 5)
 STI_beta
@@ -1119,7 +1268,7 @@ STI_alpha <-ggplot(STI, aes(x = alpha, fill = as.factor(period))) +
   geom_vline(xintercept = 0, lty = 2) +
   labs(x = "Intercept",
        y = "Posterior density")
-pdf(file = "Output/Supplemental/FigureS12_STIalpha.pdf",   # The directory you want to save the file in
+pdf(file = "Output/FigureS12_STIalpha.pdf",   # The directory you want to save the file in
     width = 7, # The width of the plot in inches
     height = 5)
 STI_alpha
@@ -1133,7 +1282,7 @@ postplot(STI, STI$beta)
 postplot(STI,STI$alpha)
 as.numeric(STI$period)
 overlap.sti <- NA
-for(j in 2:4){
+for(j in 1:3){
   temp1 <- STI%>%filter(region==region.names[j])
   for(i in 1:4){
     temp <- temp1%>%filter(Index==index.names[i])%>%dplyr::select(beta, period,region)
@@ -1146,8 +1295,23 @@ for(j in 2:4){
   
 }
 
-overlap.sti<-overlap.sti%>%mutate(survey="STI")
+overlap.sti.beta<-overlap.sti%>%mutate(survey="STI")
 
+overlap.sti <- NA
+for(j in 1:3){
+  temp1 <- STI%>%filter(region==region.names[j])
+  for(i in 1:4){
+    temp <- temp1%>%filter(Index==index.names[i])%>%dplyr::select(alpha, period,region)
+    ov1 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(1), period2=c(2), Index=index.names[i], region=region.names[j])
+    ov2 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(alpha),temp%>%filter(period==3)%>%dplyr::select(alpha)), period1=c(1), period2=c(3), Index=index.names[i], region=region.names[j])
+    ov3 <- data.frame(ov=overlap(temp%>%filter(period==3)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(3), period2=c(2), Index=index.names[i], region=region.names[j])
+    temp2<-rbind(ov1,ov2,ov3)
+    overlap.sti <-rbind(temp2,overlap.sti)
+  }
+  
+}
+
+overlap.sti.alpha<-overlap.sti%>%mutate(survey="STI")
 
 ###### LUSI #######
 lusi_dat <-ggplot(data = data.phe.lm%>%filter(Up_Name=="stand_lusi"&period!=4), aes(y = Up_Value, x =Index_Value,col=as.factor(period))) +
@@ -1163,7 +1327,7 @@ lusi_dat <-ggplot(data = data.phe.lm%>%filter(Up_Name=="stand_lusi"&period!=4), 
   theme(plot.title = element_text(hjust = 0.5))+
   ggtitle("Spring")
 lusi_dat
-pdf(file = "Output/Supplemental/FigureS13_LUSIlinearregression.pdf",   # The directory you want to save the file in
+pdf(file = "Output/FigureS13_LUSIlinearregression.pdf",   # The directory you want to save the file in
     width = 7, # The width of the plot in inches
     height = 5)
 lusi_dat
@@ -1192,7 +1356,7 @@ LUSI_beta <-ggplot(LUSI, aes(x = beta, fill = as.factor(period))) +
   geom_vline(xintercept = 0, lty = 2) +
   labs(x = "Slope",
        y = "Posterior density")
-pdf(file = "Output/Supplemental/FigureS14_LUSIbeta.pdf",   # The directory you want to save the file in
+pdf(file = "Output/FigureS14_LUSIbeta.pdf",   # The directory you want to save the file in
     width = 7, # The width of the plot in inches
     height = 5)
 LUSI_beta
@@ -1207,14 +1371,14 @@ LUSI_alpha <-ggplot(LUSI, aes(x = alpha, fill = as.factor(period))) +
   geom_vline(xintercept = 0, lty = 2) +
   labs(x = "Intercept",
        y = "Posterior density")
-pdf(file = "Output/Supplemental/FigureS15_LUSIalpha.pdf",   # The directory you want to save the file in
+pdf(file = "Output/FigureS15_LUSIalpha.pdf",   # The directory you want to save the file in
     width = 7, # The width of the plot in inches
     height = 5)
 LUSI_alpha
 dev.off()
 
 overlap.lusi <- NA
-for(j in 2:4){
+for(j in 1:3){
   temp1 <- LUSI%>%filter(region==region.names[j])
   for(i in 1:4){
     temp <- temp1%>%filter(Index==index.names[i])%>%dplyr::select(beta, period,region)
@@ -1228,7 +1392,24 @@ for(j in 2:4){
 }
 
 overlap.lusi
-overlap.lusi<-overlap.lusi%>%mutate(survey="LUSI")
+overlap.lusi.beta<-overlap.lusi%>%mutate(survey="LUSI")
+
+overlap.lusi <- NA
+for(j in 1:3){
+  temp1 <- LUSI%>%filter(region==region.names[j])
+  for(i in 1:4){
+    temp <- temp1%>%filter(Index==index.names[i])%>%dplyr::select(alpha, period,region)
+    ov1 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(1), period2=c(2), Index=index.names[i], region=region.names[j])
+    ov2 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(alpha),temp%>%filter(period==3)%>%dplyr::select(alpha)), period1=c(1), period2=c(3), Index=index.names[i], region=region.names[j])
+    ov3 <- data.frame(ov=overlap(temp%>%filter(period==3)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(3), period2=c(2), Index=index.names[i], region=region.names[j])
+    temp2<-rbind(ov1,ov2,ov3)
+    overlap.lusi <-rbind(temp2,overlap.lusi)
+  }
+  
+}
+
+overlap.lusi
+overlap.lusi.alpha<-overlap.lusi%>%mutate(survey="LUSI")
 
 ###### TUMI #######
 tumi_dat <-ggplot(data = data.phe.lm%>%filter(Up_Name=="stand_tumi"&period!=4), aes(y = Up_Value, x =Index_Value,col=as.factor(period))) +
@@ -1244,7 +1425,7 @@ tumi_dat <-ggplot(data = data.phe.lm%>%filter(Up_Name=="stand_tumi"&period!=4), 
   theme(plot.title = element_text(hjust = 0.5))+
   ggtitle("Spring")
 tumi_dat
-pdf(file = "Output/Supplemental/FigureS7_TUMIlinearregression.pdf",   # The directory you want to save the file in
+pdf(file = "Output/FigureS7_TUMIlinearregression.pdf",   # The directory you want to save the file in
     width = 7, # The width of the plot in inches
     height = 5)
 tumi_dat
@@ -1272,7 +1453,7 @@ TUMI_beta <-ggplot(TUMI, aes(x = beta, fill = as.factor(period))) +
   geom_vline(xintercept = 0, lty = 2) +
   labs(x = "Slope",
        y = "Posterior density")
-pdf(file = "Output/Supplemental/FigureS8_TUMIbeta.pdf",   # The directory you want to save the file in
+pdf(file = "Output/FigureS8_TUMIbeta.pdf",   # The directory you want to save the file in
     width = 7, # The width of the plot in inches
     height = 5)
 TUMI_beta
@@ -1287,7 +1468,7 @@ TUMI_alpha <-ggplot(TUMI, aes(x = alpha, fill = as.factor(period))) +
   geom_vline(xintercept = 0, lty = 2) +
   labs(x = "Intercept",
        y = "Posterior density")
-pdf(file = "Output/Supplemental/FigureS9_TUMIalpha.pdf",   # The directory you want to save the file in
+pdf(file = "Output/FigureS9_TUMIalpha.pdf",   # The directory you want to save the file in
     width = 7, # The width of the plot in inches
     height = 5)
 TUMI_alpha
@@ -1295,7 +1476,7 @@ dev.off()
 
 
 overlap.tumi <- NA
-for(j in 2:4){
+for(j in 1:3){
   temp1 <- TUMI%>%filter(region==region.names[j])
   for(i in 1:4){
     temp <- temp1%>%filter(Index==index.names[i])%>%dplyr::select(beta, period,region)
@@ -1307,53 +1488,25 @@ for(j in 2:4){
   }
   
 }
-
-overlap.tumi<-overlap.tumi%>%mutate(survey="TUMI")
-
-overlap.phe<-na.omit(overlap.tumi)%>%
-  add_row(na.omit(overlap.lusi))%>%
-  add_row(na.omit(overlap.sti))
+overlap.tumi.beta<- overlap.tumi%>%mutate(survey="TUMI")
 
 
-overlap.phe%>%filter(period1==1,period2==3)%>%summarise(mean=mean(ov))
-overlap.phe%>%filter(period1==1,period2==3)%>%summarise(sd=sd(ov))
-
-overlap.phe%>%filter(period1==3,period2==2)%>%summarise(mean=mean(ov))
-overlap.phe%>%filter(period1==3,period2==2)%>%summarise(sd=sd(ov))
-
-overlap.phe%>%filter(region=="Northern CC",period1==3,period2==2)
-overlap.phe%>%filter(region=="Southern CC",period1==3,period2==2)
-overlap.phe%>%filter(region=="Central CC",period1==3,period2==2)
-
-overlap.phe%>%filter(region=="Northern CC",period1==3,period2==2, survey=='TUMI'|survey=="STI", Index=="ONI"|Index=="NPGO"|Index=="PDO")%>%summarise(mean=mean(ov))
-overlap.phe%>%filter(region=="Central CC",period1==3,period2==2, survey=='TUMI'|survey=="STI", Index=="ONI"|Index=="NPGO"|Index=="PDO")%>%summarise(mean=mean(ov))
-overlap.phe%>%filter(region=="Southern CC",period1==3,period2==2, survey=='TUMI'|survey=="STI", Index=="ONI"|Index=="NPGO"|Index=="PDO")%>%summarise(mean=mean(ov))
-
-overlap.phe%>%filter(region=="Northern CC",period1==3,period2==2, survey=='TUMI', Index=="ONI"|Index=="NPGO")%>%summarise(mean=mean(ov))
-overlap.phe%>%filter(region=="Central CC",period1==3,period2==2, survey=='TUMI'|survey=="STI", Index=="ONI"|Index=="NPGO"|Index=="PDO")%>%summarise(mean=mean(ov))
-overlap.phe%>%filter(region=="Southern CC",period1==3,period2==2, survey=='TUMI'|survey=="STI", Index=="ONI"|Index=="NPGO"|Index=="PDO")%>%summarise(mean=mean(ov))
-
-overlap.phe%>%filter(region=="Central CC",period1==3,period2==2, survey=="STI", Index=="NPH")%>%summarise(mean=mean(ov))
+overlap.tumi <- NA
+for(j in 1:3){
+  temp1 <- TUMI%>%filter(region==region.names[j])
+  for(i in 1:4){
+    temp <- temp1%>%filter(Index==index.names[i])%>%dplyr::select(alpha, period,region)
+    ov1 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(1), period2=c(2), Index=index.names[i], region=region.names[j])
+    ov2 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(alpha),temp%>%filter(period==3)%>%dplyr::select(alpha)), period1=c(1), period2=c(3), Index=index.names[i], region=region.names[j])
+    ov3 <- data.frame(ov=overlap(temp%>%filter(period==3)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(3), period2=c(2), Index=index.names[i], region=region.names[j])
+    temp2<-rbind(ov1,ov2,ov3)
+    overlap.tumi <-rbind(temp2,overlap.tumi)
+  }
+  
+}
+overlap.tumi.alpha<- overlap.tumi%>%mutate(survey="TUMI")
 
 
-overlap.phe%>%filter(ov>0.7&period1==3&period2==2)
-
-
-overlap.phe%>%filter(period1==3&period2==2)%>%
-  group_by(Index)%>%
-  summarise(mean=mean(ov), sd=sd(ov))
-
-overlap.phe%>%filter(period1==3&period2==2)%>%
-  group_by(region)%>%
-  summarise(mean=mean(ov), sd=sd(ov))
-
-overlap.phe%>%filter(period1==3&period2==2)%>%
-  group_by(Index)%>%
-  summarise(mean=mean(ov), sd=sd(ov))
-
-overlap.phe%>%filter(period1==3&period2==2)%>%
-  group_by(Index, region)%>%
-  summarise(mean=mean(ov), sd=sd(ov))
 ##### WINTER Phenology Model Runs #####
 climate_dat <-readRDS(here('data/physical/climate_dat_upwelling.rds'))
 season <- "Winter"
@@ -1364,11 +1517,11 @@ data<- climate_dat%>%filter(season=="Winter"&region!='GoA'&Year_lag<2023)%>%
   left_join(eras)
 
 data.phe.lmW<-data%>%filter(season=="Winter")%>%
-  dplyr::select(Year_lag, season, period,region,stand_tumi,stand_lusi,stand_sti,stand_bakun_seasonally,
+  dplyr::select(Year_lag, season, period,region,stand_tumi,stand_lusi,stand_sti,
                 seasonal_NPH,seasonal_NPGO,seasonal_PDO,seasonal_ONI)%>%
   rename(NPH=seasonal_NPH,NPGO=seasonal_NPGO,PDO=seasonal_PDO,ONI=seasonal_ONI)%>%
   distinct()%>%
-  pivot_longer(!c(Year_lag, season, period,region,stand_tumi,stand_lusi,stand_sti,stand_bakun_seasonally), 
+  pivot_longer(!c(Year_lag, season, period,region,stand_tumi,stand_lusi,stand_sti), 
                names_to = "Index_Name", values_to = "Index_Value")%>%
   pivot_longer(!c(Year_lag, season,period,region, Index_Value, Index_Name), 
                names_to = "Up_Name", values_to = "Up_Value")%>%
@@ -1476,7 +1629,7 @@ upwelling_dat <-readRDS(here('data/physical/climate_dat_upwelling.rds'))%>%
 
   mutate(region=ifelse(region=='Southern CC','SCC',
                 ifelse(region=="Northern CC", 'NCC','CCC')))%>%
-  dplyr::select(Year_lag,  period,region, season, stand_bakun_seasonally,
+  dplyr::select(Year_lag,  period,region, season, 
                 stand_tumi,stand_lusi,stand_sti)
 
 dfa<-readRDS(here('data/physical/climate_dat_dfa.rds'))%>%
@@ -1603,6 +1756,23 @@ bioup_spring<- bind_rows(bioup_CCC_spring,bioup_SCC_spring,
                              "S. Copepod (NCC)","RREAS (CCC)","CALCOFI (SCC)"))
 
 
+overlap.bioup <- NA
+survey.names=unique(bioup_spring$Survey)
+index.names=unique(bioup_spring$Index)
+for(j in 1:length(survey.names)){
+  temp1 <- bioup_spring%>%filter(Survey==survey.names[j])
+  for(i in 1:3){
+    temp <- temp1%>%filter(Index==index.names[i])%>%dplyr::select(beta, period,Survey)
+   # ov1 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(1), period2=c(2), Index=index.names[i], region=region.names[j])
+    #ov2 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(alpha),temp%>%filter(period==3)%>%dplyr::select(alpha)), period1=c(1), period2=c(3), Index=index.names[i], region=region.names[j])
+    ov3 <- data.frame(ov=overlap(temp%>%filter(period==3)%>%dplyr::select(beta),temp%>%filter(period==2)%>%dplyr::select(beta)), period1=c(3), period2=c(2), Index=index.names[i], Survey=survey.names[j])
+    #temp2<-rbind(ov1,ov2,ov3)
+    overlap.bioup <-rbind(ov3,overlap.bioup)
+  }
+  
+}
+
+overlap.bioup%>%filter(ov<0.1)
 BioUpbeta<- ggplot(bioup_spring%>%filter(Index!="Upwelling"), aes(x = beta, fill = as.factor(period), group=as.factor(period))) +
     theme_bw() +
     facet_grid(Index~Survey, scales='free') +
@@ -1613,7 +1783,7 @@ BioUpbeta<- ggplot(bioup_spring%>%filter(Index!="Upwelling"), aes(x = beta, fill
     labs(x = "Slope",
          y = "Posterior density")
  
- pdf(file = "Output/Supplemental/FigureS20_BioUpbeta.pdf",   # The directory you want to save the file in
+ pdf(file = "Output/FigureS20_BioUpbeta.pdf",   # The directory you want to save the file in
      width = 7, # The width of the plot in inches
      height = 5)
  BioUpbeta
@@ -1630,14 +1800,23 @@ BioUpbeta<- ggplot(bioup_spring%>%filter(Index!="Upwelling"), aes(x = beta, fill
         y = "Posterior density")
 
  
- pdf(file = "Output/Supplemental/FigureS21_BioUpalpha.pdf",   # The directory you want to save the file in
+ pdf(file = "Output/FigureS21_BioUpalpha.pdf",   # The directory you want to save the file in
      width = 7, # The width of the plot in inches
      height = 5)
  BioUpalpha
  dev.off()
  
  #### Full Data Results ####
-upwelling
+ overlap.phe<-na.omit(overlap.tumi.beta)%>%
+   add_row(na.omit(overlap.lusi.beta))%>%
+   add_row(na.omit(overlap.sti.beta))%>%
+   mutate(parameter="beta")
+
+ overlap.phe.alpha<-na.omit(overlap.tumi.alpha)%>%
+   add_row(na.omit(overlap.lusi.alpha))%>%
+   add_row(na.omit(overlap.sti.alpha))%>%
+   mutate(parameter="alpha")
+ upwelling
  STI<-STI%>%dplyr::select(alpha,beta,Index,yfirst,ylast,survey,
                      region,period,Season,lag)%>%mutate(period=as.numeric(as.factor(period)))
  LUSI<-LUSI%>%dplyr::select(alpha,beta,Index,yfirst,ylast,survey,
@@ -1671,14 +1850,34 @@ overlap.up<-overlap.up%>%mutate(region=ifelse(region=='Southern CC','SCC',
                      season="Spring", offset=0, Survey="Upwelling")%>%
   dplyr::select(ov,period1,period2,Index,Survey,region,season,offset)
 
-overlap_full<-bind_rows(na.omit(overlap.CALCOFI_Woffset),na.omit(overlap.CALCOFI_W),na.omit(overlap.CALCOFIoffset),na.omit(overlap.CALCOFI),
-na.omit(overlap.RREAS_Woffset),na.omit(overlap.RREASoffset),na.omit(overlap.RREAS_W),na.omit(overlap.RREAS),
-na.omit(overlap.northern),na.omit(overlap.northernW),
-na.omit(overlap.southern),na.omit(overlap.southernW),
-na.omit(overlap.up), na.omit(overlap.upW))
+overlap_full.beta<-bind_rows(na.omit(overlap.CALCOFI_W.beta),
+                        na.omit(overlap.CALCOFIoffset.beta),
+                        na.omit(overlap.CALCOFI.beta),
+                        na.omit(overlap.RREAS_Woffset.beta),
+                        na.omit(overlap.RREASoffset.beta),
+                        na.omit(overlap.RREAS_W.beta),
+                        na.omit(overlap.RREAS.beta),
+                        na.omit(overlap.northern.beta),
+                        na.omit(overlap.northernW.beta),
+                        na.omit(overlap.southern.beta),
+                        na.omit(overlap.southernW.beta))
 
+overlap_full.alpha<-bind_rows(na.omit(overlap.CALCOFI_W.alpha),
+                             na.omit(overlap.CALCOFIoffset.alpha),
+                             na.omit(overlap.CALCOFI.alpha),
+                             na.omit(overlap.RREAS_Woffset.alpha),
+                             na.omit(overlap.RREASoffset.alpha),
+                             na.omit(overlap.RREAS_W.alpha),
+                             na.omit(overlap.RREAS.alpha),
+                             na.omit(overlap.northern.alpha),
+                             na.omit(overlap.northernW.alpha),
+                             na.omit(overlap.southern.alpha),
+                             na.omit(overlap.southernW.alpha))
 
-saveRDS(overlap_full, file = 'data/overlap_Results.rds')
+saveRDS(overlap_full.beta, file = 'data/overlap_Results_beta.rds')
+saveRDS(overlap_full.alpha, file = 'data/overlap_Results_alpha.rds')
+saveRDS(overlap.phe, file = 'data/overlap_Results_phe_beta.rds')
+saveRDS(overlap.phe.alpha, file = 'data/overlap_Results_phe_alpha.rds')
 
 saveRDS(Full_Results, file = here('data/Full_Results.rds'))
 
@@ -1732,7 +1931,7 @@ bio_dat<-ggplot(data = dat_plot%>%filter(season=="Spring"&period!=4),
   theme(plot.title = element_text(hjust = 0.5))+
   ggtitle("Spring")
 bio_dat
-pdf(file = "Output/Supplemental/FigureS16_BIOlinearregression.pdf",   # The directory you want to save the file in
+pdf(file = "Output/FigureS16_BIOlinearregression.pdf",   # The directory you want to save the file in
     width = 7, # The width of the plot in inches
     height = 5)
 bio_dat
@@ -1760,7 +1959,7 @@ bio.beta<-ggplot(data = bio%>%
   geom_vline(xintercept = 0, lty = 2) +
   labs(x = "Slope",
        y = "Posterior density")
-pdf(file = "Output/Supplemental/FigureS17_Biobeta.pdf",   # The directory you want to save the file in
+pdf(file = "Output/FigureS17_Biobeta.pdf",   # The directory you want to save the file in
     width = 7, # The width of the plot in inches
     height = 5)
 bio.beta
@@ -1779,7 +1978,7 @@ bio.alpha<-ggplot(data = bio%>%
   geom_vline(xintercept = 0, lty = 2) +
   labs(x = "Intercept",
        y = "Posterior density")
-pdf(file = "Output/Supplemental/FigureS18_Bioalpha.pdf",   # The directory you want to save the file in
+pdf(file = "Output/FigureS18_Bioalpha.pdf",   # The directory you want to save the file in
     width = 7, # The width of the plot in inches
     height = 5)
 bio.alpha
@@ -1824,7 +2023,7 @@ bio_dat<-ggplot(data = dat_plot%>%filter(season=="Winter"&period!=4),
   theme(plot.title = element_text(hjust = 0.5))+
   ggtitle("Winter")
 bio_dat
-pdf(file = "Output/Supplemental/FigureS31_BIOlinearregressionW.pdf",   # The directory you want to save the file in
+pdf(file = "Output/FigureS31_BIOlinearregressionW.pdf",   # The directory you want to save the file in
     width =7, # The width of the plot in inches
     height = 5)
 bio_dat
@@ -1852,7 +2051,7 @@ bio.beta<-ggplot(data = bio%>%
   geom_vline(xintercept = 0, lty = 2) +
   labs(x = "Slope",
        y = "Posterior density")
-pdf(file = "Output/Supplemental/FigureS32_BiobetaW.pdf",   # The directory you want to save the file in
+pdf(file = "Output/FigureS32_BiobetaW.pdf",   # The directory you want to save the file in
     width = 7, # The width of the plot in inches
     height = 5)
 bio.beta
@@ -1871,7 +2070,7 @@ bio.alpha<-ggplot(data = bio%>%
   geom_vline(xintercept = 0, lty = 2) +
   labs(x = "Intercept",
        y = "Posterior density")
-pdf(file = "Output/Supplemental/FigureS33_BioalphaW.pdf",   # The directory you want to save the file in
+pdf(file = "Output/FigureS33_BioalphaW.pdf",   # The directory you want to save the file in
     width = 7, # The width of the plot in inches
     height = 5)
 bio.alpha
@@ -1910,7 +2109,7 @@ sti_datW <-ggplot(data = data.phe.lm%>%filter(Up_Name=="stand_sti"&period!=4), a
   theme(plot.title = element_text(hjust = 0.5))+
   ggtitle("Winter")
 sti_datW
-pdf(file = "Output/Supplemental/FigureS25_STIlinearregressionW.pdf",   # The directory you want to save the file in
+pdf(file = "Output/FigureS25_STIlinearregressionW.pdf",   # The directory you want to save the file in
     width = 7, # The width of the plot in inches
     height = 5)
 sti_datW
@@ -1930,7 +2129,7 @@ tumi_datW <-ggplot(data = data.phe.lm%>%filter(Up_Name=="stand_tumi"&period!=4),
   theme(plot.title = element_text(hjust = 0.5))+
   ggtitle("Winter")
 tumi_datW
-pdf(file = "Output/Supplemental/FigureS22_TUMIlinearregressionW.pdf",   # The directory you want to save the file in
+pdf(file = "Output/FigureS22_TUMIlinearregressionW.pdf",   # The directory you want to save the file in
     width = 7, # The width of the plot in inches
     height = 5)
 tumi_datW
@@ -1950,7 +2149,7 @@ lusi_datW <-ggplot(data = data.phe.lm%>%filter(Up_Name=="stand_lusi"&period!=4),
   theme(plot.title = element_text(hjust = 0.5))+
   ggtitle("Winter")
 lusi_datW
-pdf(file = "Output/Supplemental/FigureS28_lusilinearregressionW.pdf",   # The directory you want to save the file in
+pdf(file = "Output/FigureS28_lusilinearregressionW.pdf",   # The directory you want to save the file in
     width = 7, # The width of the plot in inches
     height = 5)
 lusi_datW
@@ -1966,7 +2165,7 @@ STI_betaW <-ggplot(STIW, aes(x = beta, fill = as.factor(period))) +
   labs(x = "Slope",
        y = "Posterior density")
 
-pdf(file = "Output/Supplemental/FigureS26_STIbetaW.pdf",   # The directory you want to save the file in
+pdf(file = "Output/FigureS26_STIbetaW.pdf",   # The directory you want to save the file in
     width = 7, # The width of the plot in inches
     height = 5)
 STI_betaW
@@ -1982,7 +2181,7 @@ STI_alphaW <-ggplot(STIW, aes(x = alpha, fill = as.factor(period))) +
   labs(x = "Intercept",
        y = "Posterior density")
 
-pdf(file = "Output/Supplemental/FigureS27_STIalphaW.pdf",   # The directory you want to save the file in
+pdf(file = "Output/FigureS27_STIalphaW.pdf",   # The directory you want to save the file in
     width = 7, # The width of the plot in inches
     height = 5)
 STI_alphaW
@@ -1998,7 +2197,7 @@ TUMI_betaW <-ggplot(TUMIW, aes(x = beta, fill = as.factor(period))) +
   labs(x = "Slope",
        y = "Posterior density")
 
-pdf(file = "Output/Supplemental/FigureS23_TUMIbetaW.pdf",   # The directory you want to save the file in
+pdf(file = "Output/FigureS23_TUMIbetaW.pdf",   # The directory you want to save the file in
     width = 7, # The width of the plot in inches
     height = 5)
 TUMI_betaW
@@ -2014,7 +2213,7 @@ TUMI_alphaW <-ggplot(TUMIW, aes(x = alpha, fill = as.factor(period))) +
   labs(x = "Intercept",
        y = "Posterior density")
 
-pdf(file = "Output/Supplemental/FigureS24_TUMIalphaW.pdf",   # The directory you want to save the file in
+pdf(file = "Output/FigureS24_TUMIalphaW.pdf",   # The directory you want to save the file in
     width = 7, # The width of the plot in inches
     height = 5)
 TUMI_alphaW
@@ -2031,7 +2230,7 @@ LUSI_betaW <-ggplot(LUSIW, aes(x = beta, fill = as.factor(period))) +
   labs(x = "Slope",
        y = "Posterior density")
 
-pdf(file = "Output/Supplemental/FigureS29_LUSIbetaW.pdf",   # The directory you want to save the file in
+pdf(file = "Output/FigureS29_LUSIbetaW.pdf",   # The directory you want to save the file in
     width = 7, # The width of the plot in inches
     height = 5)
 LUSI_betaW
@@ -2047,7 +2246,7 @@ LUSI_alphaW <-ggplot(LUSIW, aes(x = alpha, fill = as.factor(period))) +
   labs(x = "Intercept",
        y = "Posterior density")
 
-pdf(file = "Output/Supplemental/FigureS30_LUSIalphaW.pdf",   # The directory you want to save the file in
+pdf(file = "Output/FigureS30_LUSIalphaW.pdf",   # The directory you want to save the file in
     width = 7, # The width of the plot in inches
     height = 5)
 LUSI_alphaW
@@ -2078,7 +2277,7 @@ bio_dat<-ggplot(data =na.omit(dat_plot%>%filter(season=="Spring")),
   theme(plot.title = element_text(hjust = 0.5))+
   ggtitle("1-year Lag")
 bio_dat
-pdf(file = "Output/Supplemental/FigureS33_BIOlinearregressionLAG.pdf",   # The directory you want to save the file in
+pdf(file = "Output/FigureS33_BIOlinearregressionLAG.pdf",   # The directory you want to save the file in
     width = 7, # The width of the plot in inches
     height = 5)
 bio_dat
@@ -2106,7 +2305,7 @@ bio.beta<-ggplot(data = bio%>%
   geom_vline(xintercept = 0, lty = 2) +
   labs(x = "Slope",
        y = "Posterior density")
-pdf(file = "Output/Supplemental/FigureS34_Biobeta.pdf",   # The directory you want to save the file in
+pdf(file = "Output/FigureS34_Biobeta.pdf",   # The directory you want to save the file in
     width = 7, # The width of the plot in inches
     height = 5)
 bio.beta
@@ -2125,7 +2324,7 @@ bio.alpha<-ggplot(data = bio%>%
   geom_vline(xintercept = 0, lty = 2) +
   labs(x = "Intercept",
        y = "Posterior density")
-pdf(file = "Output/Supplemental/FigureS34_Bioalpha.pdf",   # The directory you want to save the file in
+pdf(file = "Output/FigureS34_Bioalpha.pdf",   # The directory you want to save the file in
     width = 7, # The width of the plot in inches
     height = 5)
 bio.alpha

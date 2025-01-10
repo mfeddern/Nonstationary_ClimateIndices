@@ -703,6 +703,6 @@ dev.off()
 mapPlot<-ggarrange(map, ncol=1,labels = c("A"))
 NPHPlot<-ggarrange(a.plot,j.plot,i.plot, nrow = 3, labels = c("B", "C", "D"))
 
-pdf("Output/Fig Map and NPH.pdf", 9.75,6) 
-ggarrange(mapPlot,NPHPlot,ncol=2,widths=c(1,1.5))
+pdf("Output/Fig Map and NPH.pdf", 9.75,6.5) 
+ggarrange(mapPlot,NPHPlot,ncol=2,widths=c(1,1.25))
 dev.off()

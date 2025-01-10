@@ -55,7 +55,7 @@ bakun <- bakundat%>%
   add_column("Day"=as.numeric(format(as.Date(bakundat$time),"%d")))%>%
   add_column("YearDay"=as.numeric(yday(format(as.Date(bakundat$time)))))
 
-#dplyr::dplyr::selecting stations and assigning regions
+#dplyr::selecting stations and assigning regions
 bakun_region <- bakun%>%
   filter(station_id=='36N'|station_id=='39N'|station_id=='42N')%>%
   mutate(region="Central CC")%>%
@@ -69,7 +69,7 @@ bakun_region <- bakun%>%
               filter(station_id=='51N'|station_id=='54N'|station_id=='57N'|station_id=='60N')%>%
               mutate(region="GoA"))
 
-#dplyr::dplyr::selecting months to assign a season and adding lag for nov/dec for winter
+#dplyr::selecting months to assign a season and adding lag for nov/dec for winter
 bakun_season <- bakun_region%>%
   filter(Month==12|Month==11|Month==1|Month==2|Month==3)%>%
   mutate(season="Winter")%>%
@@ -490,11 +490,11 @@ copepod_seasonal<-copepod_seasonal%>%
 
 ### Compile  with Upwelling Indices to Dataframe ####
 unique(bakun_time$region)
-climate_dat <- bakun_time%>%rename(Year_lag=Year)%>%
+climate_dat <- bakun_time%>%
   left_join(phen_stand, by=c('region', 'Year_lag'))%>%
   # merge(PDO, by=c('Month', 'Year_lag'))%>%
   # merge(PDO_annual, by=c('Year_lag'))%>%
-  merge(PDO_seasonal, by=c('Year_lag'))%>%
+  merge(PDO_seasonal, by=c('season','Year_lag'))%>%
   # merge(NPH, by=c('Month', 'Year_lag'))%>%
   merge(NPH_annual, by=c('Year_lag'))%>%
   merge(NPH_seasonal, by=c('season','Year_lag'))%>%
@@ -509,7 +509,7 @@ climate_dat <- bakun_time%>%rename(Year_lag=Year)%>%
 
 colnames(climate_dat)
 climate_dat <- climate_dat%>%
-  dplyr::select(Year_lag, region, season, period,stand_tumi,           
+  dplyr::select(Year_lag,era.region, region, season, period,stand_tumi,           
          stand_sti, stand_lusi,
           seasonal_PDO, annual_NPGO, seasonal_NPGO, annual_ONI, seasonal_ONI,
          annual_NPH, seasonal_NPH)%>%
@@ -534,7 +534,7 @@ climate_dat <- PDO_seasonal%>%
  # merge(ONI, by=c('Month', 'Year_lag'))%>%
   merge(ONI_annual, by=c('Year_lag'))%>%
   merge(ONI_seasonal, by=c('season', 'Year_lag'))%>%
-  # merge(copepod%>%dplyr::dplyr::select(Year_lag, period), by=c('Year_lag'))%>%
+  # merge(copepod%>%dplyr::select(Year_lag, period), by=c('Year_lag'))%>%
   merge(dfa.trend, by=c('Year_lag'))%>%
   #left_join(NPGO, by=c('Month', 'Year_lag'))%>%
   left_join(NPGO_annual, by=c('Year_lag'))%>%
@@ -568,7 +568,7 @@ climate_dat <- PDO_seasonal%>%
   # merge(ONI, by=c('Month', 'Year_lag'))%>%
   merge(ONI_annual, by=c('Year_lag'))%>%
   merge(ONI_seasonal, by=c('season', 'Year_lag'))%>%
-  # merge(copepod%>%dplyr::dplyr::select(Year_lag, period), by=c('Year_lag'))%>%
+  # merge(copepod%>%dplyr::select(Year_lag, period), by=c('Year_lag'))%>%
   #merge(copepod_annual, by=c('Year_lag'))%>%
   merge(copepod_seasonal, by=c('season', 'Year_lag'))%>%
   #left_join(NPGO, by=c('Month', 'Year_lag'))%>%
@@ -613,7 +613,7 @@ climate_dat <-climate_dat%>%
   bind_rows(climate_dat%>%
               filter(Year_lag>=1979)%>%
               mutate(period2='2'))%>%
-  dplyr::dplyr::select(Year_lag, season, period, period2,seasonal_PDO, seasonal_NPGO, seasonal_ONI)%>%
+  dplyr::select(Year_lag, season, period, period2,seasonal_PDO, seasonal_NPGO, seasonal_ONI)%>%
   distinct()
 
 ggplot(climate_dat, aes(x=seasonal_PDO, y=seasonal_ONI))+
