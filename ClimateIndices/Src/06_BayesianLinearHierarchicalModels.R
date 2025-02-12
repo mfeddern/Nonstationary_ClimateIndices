@@ -165,6 +165,8 @@ data <- dat%>%filter(season=="Spring", trend=="CALCOFI")%>%
   filter(Year_lag<2023)%>%
   add_column(full=1)
 
+
+
 CALCOFI <-NULL
 columns<-c(which(colnames(data) == "seasonal_PDO"), which(colnames(data) == "seasonal_NPGO"),
            which(colnames(data) == "seasonal_NPH"),which(colnames(data) == "seasonal_ONI"))
@@ -1768,6 +1770,23 @@ for(j in 1:length(survey.names)){
     ov3 <- data.frame(ov=overlap(temp%>%filter(period==3)%>%dplyr::select(beta),temp%>%filter(period==2)%>%dplyr::select(beta)), period1=c(3), period2=c(2), Index=index.names[i], Survey=survey.names[j])
     #temp2<-rbind(ov1,ov2,ov3)
     overlap.bioup <-rbind(ov3,overlap.bioup)
+  }
+  
+}
+
+
+overlap.bioup.alpha <- NA
+survey.names=unique(bioup_spring$Survey)
+index.names=unique(bioup_spring$Index)
+for(j in 1:length(survey.names)){
+  temp1 <- bioup_spring%>%filter(Survey==survey.names[j])
+  for(i in 1:3){
+    temp <- temp1%>%filter(Index==index.names[i])%>%dplyr::select(alpha, period,Survey)
+    # ov1 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(1), period2=c(2), Index=index.names[i], region=region.names[j])
+    #ov2 <- data.frame(ov=overlap(temp%>%filter(period==1)%>%dplyr::select(alpha),temp%>%filter(period==3)%>%dplyr::select(alpha)), period1=c(1), period2=c(3), Index=index.names[i], region=region.names[j])
+    ov3 <- data.frame(ov=overlap(temp%>%filter(period==3)%>%dplyr::select(alpha),temp%>%filter(period==2)%>%dplyr::select(alpha)), period1=c(3), period2=c(2), Index=index.names[i], Survey=survey.names[j])
+    #temp2<-rbind(ov1,ov2,ov3)
+    overlap.bioup.alpha <-rbind(ov3,overlap.bioup.alpha)
   }
   
 }

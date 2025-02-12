@@ -221,6 +221,7 @@ mean_beta$survey <- factor(mean_beta$survey,
                                         "Upwelling","STI","TUMI","LUSI"))
 
 dist_phe<-ggplot(mean_beta%>%filter(survey=="TUMI"|survey=="STI"|survey=="LUSI")%>%
+                  # filter(region=="SCC"|region=="CCC"|region=="NCC")%>%
          filter(Season=="Spring")%>%filter(lag==0), aes(x = median_beta, y=Index,col = as.factor(period))) +
   theme_bw() +
   geom_errorbar(aes(xmin=sd_beta_80$CI_low, xmax=sd_beta_80$CI_high),width = 0, lwd=0.3, position =ggstance::position_dodgev(height=dodge))+
@@ -251,6 +252,7 @@ dist_bio<-ggplot(mean_beta%>%
   xlab("Slope") +
   theme(legend.position="none") 
 dist_bio
+
 dist_bio2<-ggplot(mean_beta%>%filter(survey=="CALCOFI")%>%
                     bind_rows(mean_beta%>%filter(survey=="RREAS"|survey=="N. Copepod"|survey=="S. Copepod"&period!=1))%>%
          filter(Index=="TUMI"|Index=="LUSI"|Index=="STI")%>%
@@ -621,4 +623,142 @@ diff_bio2
 pdf("Output/Difference_Distribution.pdf", 10.5,5) 
 ggarrange(diff_phe,diff_bio,diff_bio2, ncol = 3, labels = c("A", "B", "C"), 
           widths=c(4,2,2), heights=c(2,2,1.75))
+dev.off()
+
+##### Posterior Mean Winter/Spring #####
+
+dat<-mean_beta%>%filter(survey=="TUMI"|survey=="STI"|survey=="LUSI")%>%
+                  filter(lag==0)
+dat$sd_beta_80.CI_high
+spw_slope_A<-ggplot(dat, aes(x = median_beta, y=Index,lty=Season,col=Season, group=as.factor(period),shape=as.factor(period))) +
+         theme_bw() +
+  facet_grid(region~survey) +
+  geom_point(alpha = 0.9,position = ggstance::position_dodgev(height=dodge),cex=2.5) +
+  scale_colour_manual(values=c("palevioletred", "darkgrey")) +
+  geom_errorbarh(aes(xmin=sd_beta_80$CI_low, xmax=sd_beta_80$CI_high),position = ggstance::position_dodgev(height=dodge),height=0.5, alpha=0.75)+
+  scale_linetype_manual(values=c(2,1))+
+  scale_shape_manual(values=c(16,17,15),labels=c('1967 - 1988', '1989 - 2012','2013 - 2022'))+
+  geom_vline(xintercept = 0, lty = 2) +
+  labs(x = "Slope",
+       y = "Climate Index",shape="Period")+
+theme(legend.position = "none")
+
+biodat<-mean_beta%>%
+  filter(survey=="CALCOFI"&period!=4)%>%
+  bind_rows(mean_beta%>%filter(survey=="RREAS"&period!=1&period!=4|survey=="N. Copepod"&period!=1&period!=4|survey=="S. Copepod"&period!=1&period!=4))%>%
+  filter(lag==0)%>%
+  filter(Index=="NPGO"|Index=="PDO"|Index=="ONI"|Index=="NPH")
+
+biodatint<-mean_alpha%>%
+  filter(survey=="CALCOFI"&period!=4)%>%
+  bind_rows(mean_alpha%>%
+              filter(survey=="RREAS"&period!=1&period!=4|survey=="N. Copepod"&period!=1&period!=4|survey=="S. Copepod"&period!=1&period!=4))%>%
+  filter(lag==0)%>%
+  filter(Index=="NPGO"|Index=="PDO"|Index=="ONI"|Index=="NPH")
+
+spw_slope_B<-ggplot(biodat, aes(x = median_beta, y=Index,lty=Season,col=Season, group=as.factor(period),shape=as.factor(period))) +
+  theme_bw() +
+  facet_wrap(~survey,ncol=1) +
+  geom_point(alpha = 0.9,position = ggstance::position_dodgev(height=dodge),cex=2.5) +
+  scale_colour_manual(values=c("palevioletred", "darkgrey")) +
+  geom_errorbarh(aes(xmin=sd_beta_80$CI_low, xmax=sd_beta_80$CI_high),position = ggstance::position_dodgev(height=dodge),height=0.5, alpha=0.75)+
+  scale_linetype_manual(values=c(2,1))+
+  scale_shape_manual(values=c(16,17,15),labels=c('1967 - 1988', '1989 - 2012','2013 - 2022'))+
+  geom_vline(xintercept = 0, lty = 2) +
+  labs(x = "Slope",
+       y = "Climate Index",shape="Period")
+
+spw_slope_B
+
+spw_int_A<-ggplot(mean_alpha%>%filter(survey=="TUMI"|survey=="STI"|survey=="LUSI")%>%
+                    filter(lag==0), aes(x = median_alpha, y=Index,lty=Season,col=Season, group=as.factor(period),shape=as.factor(period))) +
+  theme_bw() +
+  facet_grid(region~survey) +
+  geom_point(alpha = 0.9,position = ggstance::position_dodgev(height=dodge),cex=2.5) +
+  scale_colour_manual(values=c("palevioletred", "darkgrey")) +
+  geom_errorbarh(aes(xmin=sd_alpha_80$CI_low, xmax=sd_alpha_80$CI_high),position = ggstance::position_dodgev(height=dodge),height=0.5, alpha=0.75)+
+  scale_linetype_manual(values=c(2,1))+
+  scale_shape_manual(values=c(16,17,15),labels=c('1967 - 1988', '1989 - 2012','2013 - 2022'))+
+  geom_vline(xintercept = 0, lty = 2) +
+  labs(x = "Intercept",
+       y = "Climate Index",shape="Period")+
+  theme(legend.position = "none")
+spw_int_A
+
+spw_int_B<-ggplot(biodatint, aes(x = median_alpha, y=Index,lty=Season,col=Season, group=as.factor(period),shape=as.factor(period))) +
+  theme_bw() +
+  facet_wrap(~survey,ncol=1) +
+  geom_point(alpha = 0.9,position = ggstance::position_dodgev(height=dodge),cex=2.5) +
+  scale_colour_manual(values=c("palevioletred", "darkgrey")) +
+  geom_errorbarh(aes(xmin=sd_alpha_80$CI_low, xmax=sd_alpha_80$CI_high),position = ggstance::position_dodgev(height=dodge),height=0.5, alpha=0.75)+
+  scale_linetype_manual(values=c(2,1))+
+  scale_shape_manual(values=c(16,17,15),labels=c('1967 - 1988', '1989 - 2012','2013 - 2022'))+
+  geom_vline(xintercept = 0, lty = 2) +
+  labs(x = "Intercept",
+       y = "Climate Index",shape="Period")
+
+spw_int_B
+
+
+pdf("Output/WinterV2Slope.pdf", 11,5) 
+ggarrange(spw_slope_A,spw_slope_B, ncol = 2, labels = c("A", "B"), 
+          widths=c(4,3), heights=c(2,1.75))
+dev.off()
+
+pdf("Output/WinterV2Int.pdf", 11,5) 
+ggarrange(spw_int_A,spw_int_B, ncol = 2, labels = c("A", "B"), 
+          widths=c(4,3), heights=c(2,1.75))
+dev.off()
+
+
+#### lag alt ####
+
+biodat2<-mean_beta%>%
+  filter(survey=="CALCOFI"&period!=4)%>%
+  bind_rows(mean_beta%>%filter(survey=="RREAS"&period!=1&period!=4))%>%
+  filter(Season=="Spring")%>%
+  filter(Index=="NPGO"|Index=="PDO"|Index=="ONI"|Index=="NPH")
+
+biodatint2<-mean_alpha%>%
+  filter(survey=="CALCOFI"&period!=4)%>%
+  bind_rows(mean_alpha%>%
+              filter(survey=="RREAS"&period!=1&period!=4))%>%
+  filter(Season=="Spring")%>%
+  filter(Index=="NPGO"|Index=="PDO"|Index=="ONI"|Index=="NPH")
+
+
+lag_int<-ggplot(biodatint2, aes(x = median_alpha, y=Index,lty=as.factor(lag),col=as.factor(lag), group=as.factor(period),shape=as.factor(period))) +
+  theme_bw() +
+  facet_wrap(~survey,ncol=1) +
+  geom_point(alpha = 0.9,position = ggstance::position_dodgev(height=dodge),cex=2.5) +
+  scale_colour_manual(values=c("palevioletred", "darkgrey")) +
+  geom_errorbarh(aes(xmin=sd_alpha_80$CI_low, xmax=sd_alpha_80$CI_high),position = ggstance::position_dodgev(height=dodge),height=0.5, alpha=0.75)+
+  scale_linetype_manual(values=c(2,1))+
+  scale_shape_manual(values=c(16,17,15),labels=c('1967 - 1988', '1989 - 2012','2013 - 2022'))+
+  geom_vline(xintercept = 0, lty = 2) +
+  labs(x = "Intercept",
+       y = "Climate Index",shape="Period",col="Lag",lty="Lag")
+
+lag_int
+
+lag_slope<-ggplot(biodat2, aes(x = median_beta, y=Index,lty=as.factor(lag),col=as.factor(lag), group=as.factor(period),shape=as.factor(period))) +
+  theme_bw() +
+  facet_wrap(~survey,ncol=1) +
+  geom_point(alpha = 0.9,position = ggstance::position_dodgev(height=dodge),cex=2.5) +
+  scale_colour_manual(values=c("palevioletred", "darkgrey")) +
+  geom_errorbarh(aes(xmin=sd_beta_80$CI_low, xmax=sd_beta_80$CI_high),position = ggstance::position_dodgev(height=dodge),height=0.5, alpha=0.75)+
+  scale_linetype_manual(values=c(2,1))+
+  scale_shape_manual(values=c(16,17,15),labels=c('1967 - 1988', '1989 - 2012','2013 - 2022'))+
+  geom_vline(xintercept = 0, lty = 2) +
+  labs(x = "Slope",
+       y = "Climate Index",shape="Period",col="Lag",lty="Lag")
+
+lag_slope
+
+pdf("Output/Lag_Slopw.pdf", 8,5) 
+lag_slope
+dev.off()
+
+pdf("Output/Lag_Int.pdf", 8,5) 
+lag_int
 dev.off()

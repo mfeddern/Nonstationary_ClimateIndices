@@ -638,3 +638,50 @@ climate_dat_monthly2 <-climate_dat_monthly%>%
   
 saveRDS(climate_dat_monthly2, file = here('data/physical/climate_dat_monthly.rds'))
 
+#### Time Series plots for Supp ###
+
+upwellingplotdat <-climate_dat%>%filter(region!="GoA")%>%
+  dplyr::select(stand_tumi,stand_sti, stand_lusi, Year_lag, period, region)%>%
+  rename(TUMI=stand_tumi, STI=stand_sti, LUSI=stand_lusi)%>%
+  pivot_longer(c(TUMI, STI, LUSI),names_to = 'IndexName', values_to = 'IndexValue')%>%
+  distinct()
+
+col<-pnw_palette("Sunset2",3,type="discrete")  
+upwellingTS<-ggplot(data=upwellingplotdat,aes(x=Year_lag, y=IndexValue,col=as.factor(period)))+
+  facet_grid(region~IndexName)+
+  geom_line()+
+  geom_point()+
+  scale_color_manual(values =  col[1:3], name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022'))+
+  ylab("Standardized Upwelling Phenology Index")+
+  xlab("Year")
+
+
+pdf(file = "Output/FigureS_UpwellingTS.pdf",   # The directory you want to save the file in
+    width = 7, # The width of the plot in inches
+    height = 5)
+upwellingTS
+dev.off()
+
+
+climateplotdat <-climate_dat%>%filter(region!="GoA")%>%
+  dplyr::select(season,seasonal_PDO,seasonal_NPGO, seasonal_ONI, seasonal_NPH,Year_lag, period, region)%>%
+  rename(PDO=seasonal_PDO, NPGO=seasonal_NPGO, ONI=seasonal_ONI,NPH=seasonal_NPH)%>%
+  pivot_longer(c(PDO,NPGO, ONI,NPH),names_to = 'IndexName', values_to = 'IndexValue')%>%
+  distinct()
+
+col<-pnw_palette("Sunset2",3,type="discrete")  
+climateTS<-ggplot(data=climateplotdat ,aes(x=Year_lag, y=IndexValue,col=as.factor(period)))+
+  facet_grid(season~IndexName)+
+  geom_line()+
+  geom_point()+
+  scale_color_manual(values =  col[1:3], name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022'))+
+  ylab("Climate Index Value")+
+  xlab("Year")
+climateTS
+
+
+pdf(file = "Output/FigureS_ClimateTS.pdf",   # The directory you want to save the file in
+    width = 7, # The width of the plot in inches
+    height = 5)
+climateTS
+dev.off()
