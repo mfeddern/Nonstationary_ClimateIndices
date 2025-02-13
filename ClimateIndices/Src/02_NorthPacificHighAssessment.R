@@ -77,7 +77,7 @@ ggplot(data=Zplot,aes(x=Year,y=Z_Score))+
   theme(axis.title.x = element_blank(), plot.title = element_text(size=8,hjust = 0.5), axis.text = element_text(size=7),
         axis.title.y = element_text(size=7))
 
-spring.schroeder.Z%>%filter(abs(Z.mean.y)>2)
+#spring.schroeder.Z%>%filter(abs(Z.mean.y)>2)
 
 means <- spring.schroeder%>%filter(Year!=1992&Year!=1997&Year!=1998)%>%
   group_by(era.lab)%>%
@@ -125,14 +125,14 @@ j.plot <-ggplot(data=spring.schroeder%>%
   geom_hline(yintercept=mean(spring.schroeder$mean.max),lty=2, col='grey')+
   geom_vline(xintercept=mean(spring.schroeder$mean.area), lty=2, col='grey')+
   xlab(expression("North Pacific High Area "~(10^6 ~km^2)))+
-  geom_text_s(data=spring.schroeder%>%filter(Year>2020),colour='black',
-              #colour.target = "segment",
-             arrow = arrow(length = grid::unit(1.5, "mm")),
-             point.padding = 0.4,
-             # angle = 45,
-              nudge_y = c(0.5,0.1,-0.2),
-             nudge_x = c(0.3,0.5,0.5),
-              show.legend = FALSE) +
+  #geom_text_s(data=spring.schroeder%>%filter(Year>2020),colour='black',
+  #            #colour.target = "segment",
+   #          arrow = arrow(length = grid::unit(1.5, "mm")),
+   #          point.padding = 0.4,
+   #          # angle = 45,
+    #          nudge_y = c(0.5,0.1,-0.2),
+    #         nudge_x = c(0.3,0.5,0.5),
+   #           show.legend = FALSE) +
   labs(col  = "", shape = "")+
    theme( panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
