@@ -1950,11 +1950,11 @@ bio_dat<-ggplot(data = dat_plot%>%filter(season=="Spring"&period!=4),
   theme(plot.title = element_text(hjust = 0.5))+
   ggtitle("Spring")
 bio_dat
-pdf(file = "Output/FigureS16_BIOlinearregression.pdf",   # The directory you want to save the file in
-    width = 7, # The width of the plot in inches
-    height = 5)
-bio_dat
-dev.off()
+#pdf(file = "Output/FigureS16_BIOlinearregression.pdf",   # The directory you want to save the file in
+ #   width = 7, # The width of the plot in inches
+#    height = 5)
+#bio_dat
+#dev.off()
 
 
 bio<-Full_Results%>%
@@ -2348,3 +2348,34 @@ pdf(file = "Output/FigureS34_Bioalpha.pdf",   # The directory you want to save t
     height = 5)
 bio.alpha
 dev.off()
+
+
+dat_plot2<-climate_dat_cop%>%
+  bind_rows(climate_dat_CALCOFI)%>%
+  bind_rows(filter(dfa, trend=="RREAS"))%>%
+  rename(TUMI=stand_tumi, STI=stand_sti, LUSI=stand_lusi)%>%
+  mutate(trend=ifelse(trend=='seasonal_copepod_northern', 'N. Copepod (NCC)',
+                      ifelse(trend=='seasonal_copepod_southern', 'S. Copepod (NCC)',
+                      ifelse(trend=="RREAS", "RREAS (CCC)", "CALCOFI (SCC)"))))%>%
+  pivot_longer(c(TUMI, LUSI,STI),names_to = 'Index_Name', values_to = 'Index_Value')%>%
+  mutate(trend = fct_relevel(trend, "N. Copepod (NCC)", 
+                              "S. Copepod (NCC)","RREAS (CCC)","CALCOFI (SCC)"))
+
+up_bio<-ggplot(data = dat_plot2%>%filter(period!=4), 
+                aes(y = estimate, x =Index_Value,col=as.factor(period))) +
+  facet_grid(trend~Index_Name, scales='free') +
+  geom_point(aes(col=as.factor(period)), alpha = 0.5) +
+  # geom_text(aes(label=Year_lag,col=as.factor(period))) +
+  geom_smooth(method = "lm", se = FALSE, aes(col=as.factor(period))) +
+  #geom_smooth(method = "lm", se = FALSE, col='grey') +
+  scale_y_continuous(name = "Index of Abundance") +
+  scale_color_manual(values =  col[1:3], name="Period",labels=c('1967 - 1988', '1989 - 2012','2013 - 2022'))+
+  theme_bw()+
+  xlab("Climate Index Value")+
+  theme(plot.title = element_text(hjust = 0.5))
+pdf(file = "Output/FigureS10_upwellingbio.pdf",   # The directory you want to save the file in
+    width = 7, # The width of the plot in inches
+    height = 5)
+up_bio
+dev.off()
+
