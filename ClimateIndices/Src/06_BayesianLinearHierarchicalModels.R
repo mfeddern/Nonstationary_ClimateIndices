@@ -1935,8 +1935,8 @@ bind_rows(dat%>%filter(season=="Spring")%>%
   mutate(trend = fct_relevel(trend, "N. Copepod (NCC)", 
                              "S. Copepod (NCC)","RREAS (CCC)","CALCOFI (SCC)"))
 
-
-bio_dat<-ggplot(data = dat_plot%>%filter(season=="Spring"&period!=4), 
+dat_plot
+bio_dat<-ggplot(data = dat_plot%>%filter(season=="Spring"&period!=4)%>%filter(!c(trend=="RREAS (CCC)"&period==1)), 
        aes(y = estimate, x =Index_Value,col=as.factor(period))) +
   facet_grid(Index_Name~trend, scales='free') +
   geom_point(aes(col=as.factor(period)), alpha = 0.5) +
@@ -1950,10 +1950,10 @@ bio_dat<-ggplot(data = dat_plot%>%filter(season=="Spring"&period!=4),
   theme(plot.title = element_text(hjust = 0.5))+
   ggtitle("Spring")
 bio_dat
-#pdf(file = "Output/FigureS16_BIOlinearregression.pdf",   # The directory you want to save the file in
- #   width = 7, # The width of the plot in inches
-#    height = 5)
-#bio_dat
+pdf(file = "Output/FigureS16_BIOlinearregression.pdf",   # The directory you want to save the file in
+    width = 7, # The width of the plot in inches
+    height = 5)
+bio_dat
 #dev.off()
 
 
@@ -2352,7 +2352,8 @@ dev.off()
 
 dat_plot2<-climate_dat_cop%>%
   bind_rows(climate_dat_CALCOFI)%>%
-  bind_rows(filter(dfa, trend=="RREAS"))%>%
+  bind_rows(climate_dat_RREAS)%>%
+ # bind_rows(filter(dfa, trend=="RREAS"))%>%
   rename(TUMI=stand_tumi, STI=stand_sti, LUSI=stand_lusi)%>%
   mutate(trend=ifelse(trend=='seasonal_copepod_northern', 'N. Copepod (NCC)',
                       ifelse(trend=='seasonal_copepod_southern', 'S. Copepod (NCC)',
